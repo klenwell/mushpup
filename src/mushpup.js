@@ -27,11 +27,48 @@ var Mushpup = (function() {
   };
 
   /*
+   * validateLocus
+   *
+   * Validates locus string. Returns validator object.
+   */
+  var validateLocus = function(locus) {
+    return new LocusValidator(locus);
+  };
+
+  /*
    * Public Interface
    */
   var API = {
     mush: basicHash,
+    validateLocus: validateLocus,
     version: function() { return VERSION; }
   };
   return API;
 })();
+
+
+var LocusValidator = function(locus) {
+
+  var rawLocus = locus;
+
+  this.warnings = [];
+  this.errors = [];
+
+  /*
+   * Public Methods
+   */
+  this.valid = function() {
+    return false;
+  };
+
+  this.value = function() {
+    return normalizedValue();
+  };
+
+  /*
+   * Private Methods
+   */
+  var normalizedValue = function() {
+    return rawLocus.trim();
+  }
+};
