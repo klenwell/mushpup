@@ -1,3 +1,6 @@
+/*
+ * Simple tests just to show tests are running.
+ */
 module("Basic Tests");
 
 test("truthy", function() {

@@ -1,13 +1,8 @@
-module("Mushpup Test 1");
+(function() {
+  module("Mushpup module");
 
-test("Mushpup loaded", function() {
-  ok(Mushpup, "Mushpup module found");
-  ok(0, 'Should fail')
-});
-
-
-module("Mushpup Test 2");
-
-test("Mushpup loaded", function() {
-  ok(Mushpup, "Mushpup module found");
-});
+  test("Mushpup loaded", function() {
+    ok(Mushpup);
+    equal(Mushpup.version(), '3.0');
+  });
+})();
