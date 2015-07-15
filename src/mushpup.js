@@ -91,6 +91,19 @@ var LocusValidator = function(locus) {
   /*
    * Private Methods
    */
+  // Validation Methods
+  var validateLocus = function() {
+    validateModifierSyntax();
+    validateModifierConflicts();
+  };
+
+  var validateModifierSyntax = function() {
+  };
+
+  var validateModifierConflicts = function() {
+  };
+
+  // Normalization Methods
   var normalizeLocus = function(locus) {
     locus = trimWhitespaceWithWarning(locus);
     locus = flattenSlashesWithWarning(locus);
@@ -161,10 +174,6 @@ var LocusValidator = function(locus) {
     }
 
     return uniqueModifierLocus;
-  };
-
-  var validateLocus = function() {
-    return true;
   };
 
   // Init and return object

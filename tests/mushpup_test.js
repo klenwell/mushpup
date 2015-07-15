@@ -75,29 +75,30 @@
     equal(locus.value(), 'mushpup.org/klenwell/+ai',
           'Expected duplicate modifiers to be removed');
     equal(locus.warnings.length, 3,
-          'Expected 3 warning');
+          'Expected 3 warnings');
     equal(locus.warnings[0][0], 'normalization',
           'Expected normalization tag on warning');
   });
 })();
 
 (function() {
-  var validLocus,
-      invalidLocus;
+  module('Mushpup locus validation');
 
-  module('Validate locus', {
-    setup: function() {
-      validLocus = 'mushpup.org/klenwell';
-    },
-    teardown: function() {
-      validLocus = null;
-    }
-  });
+  test('that locus values are validated as expected', function() {
+    var testCases = [
+      // Input, Expect
+      ['mushpup.org/klenwell', true],
+      ['//mushpup.org//klenwell//', true],
+      ['/mushpup.org//klenwell/++a!a/', true],
+      ['mushpup.org/klenwell/+ai', false],    // i is invalid modifier
+      ['mushpup.org/klenwell/A*', false]      // A and * are mutually exclusive modifiers
+    ];
 
-  test('should validate locus', function() {
-    console.debug(validLocus);
-    var locusValidator = Mushpup.validateLocus(validLocus);
-    ok(locusValidator.valid());
-    equal(locusValidator.value(), validLocus);
+    testCases.map(function(testCase) {
+      var locusInput = testCase[0];
+      var expects = testCase[1];
+      var locus = new LocusValidator(locusInput);
+      equal(locus.valid(), expects);
+    });
   });
 })();
