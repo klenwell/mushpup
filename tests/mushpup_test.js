@@ -58,7 +58,7 @@
     equal(locus.warnings[0][1], 'Removed extra slashes from site value.');
   });
 
-  test('should removes duplicate modifiers', function() {
+  test('should remove duplicate modifiers', function() {
     var locusInput = 'mushpup.org/klenwell/++aia';
     var locus = new LocusValidator(locusInput);
     equal(locus.value(), 'mushpup.org/klenwell/+ai',
@@ -67,6 +67,17 @@
           'Expected 1 warning');
     equal(locus.warnings[0][1], 'Removed duplicate modifiers from site value.',
           'Unexpected warning message');
+  });
+
+  test('should produce 3 normalization warnings', function() {
+    var locusInput = '  /mushpup.org//klenwell/++aia/';
+    var locus = new LocusValidator(locusInput);
+    equal(locus.value(), 'mushpup.org/klenwell/+ai',
+          'Expected duplicate modifiers to be removed');
+    equal(locus.warnings.length, 3,
+          'Expected 3 warning');
+    equal(locus.warnings[0][0], 'normalization',
+          'Expected normalization tag on warning');
   });
 })();
 

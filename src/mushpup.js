@@ -92,24 +92,75 @@ var LocusValidator = function(locus) {
    * Private Methods
    */
   var normalizeLocus = function(locus) {
-    // Trim whitespace
+    locus = trimWhitespaceWithWarning(locus);
+    locus = flattenSlashesWithWarning(locus);
+    locus = uniquifyModifiersWithWarning(locus);
+    return locus;
+  };
+
+  var trimWhitespaceWithWarning = function(locus) {
     var trimmedLocus = locus.trim();
+
     if ( trimmedLocus !== locus ) {
-      self.warnings.push(['locus', 'Trimmed whitespace from ends of site value.']);
+      self.warnings.push(['normalization', 'Trimmed whitespace from ends of site value.']);
     }
 
-    // Simplify slashes
-    var locusSegments = trimmedLocus.split('/').filter(function(segment) {
+    return trimmedLocus;
+  };
+
+  var flattenSlashesWithWarning = function(locus) {
+    // Collect non-empty segments between slashes.
+    var locusSegments = locus.split('/').filter(function(segment) {
       if ( segment ) {
         return segment;
       }
     });
+
     var filteredLocus = locusSegments.join('/');
-    if ( trimmedLocus != filteredLocus ) {
-      self.warnings.push(['locus', 'Removed extra slashes from site value.']);
+
+    if ( filteredLocus != locus ) {
+      self.warnings.push(['normalization', 'Removed extra slashes from site value.']);
     }
 
     return filteredLocus;
+  };
+
+  var uniquifyModifiersWithWarning = function(locus) {
+    // Remove duplicate modifiers
+    var uniqueModifierLocus = locus;
+    var potentialModifierString = '';
+    var locusSegments = locus.split('/');
+
+    // Isolate last segment of locus to look for modifiers
+    if ( locusSegments.length > 1 ) {
+      potentialModifierString = locusSegments[locusSegments.length - 1];
+    }
+
+    // Escape regex chars: http://stackoverflow.com/a/9310752/1093087
+    var modifierRegexStr = VALID_MODS.join('').replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&');
+    var modifierInclusionRegex = new RegExp('[' + modifierRegexStr + ']');
+    var hasModifierString = modifierInclusionRegex.test(potentialModifierString);
+
+    // Filter out duplicate modifiers
+    // WARNING: this could be an issue if user were to use locus unconventionally
+    if ( hasModifierString ) {
+      // Source: http://stackoverflow.com/a/19301868/1093087
+      locusSegments[locusSegments.length - 1] =
+        potentialModifierString
+          .split('')
+          .filter(function(modifier, i, a) {
+            return a.indexOf(modifier) === i;
+          })
+          .join('');
+
+      uniqueModifierLocus = locusSegments.join('/');
+    }
+
+    if ( uniqueModifierLocus != locus ) {
+      self.warnings.push(['normalization', 'Removed duplicate modifiers from site value.']);
+    }
+
+    return uniqueModifierLocus;
   };
 
   var validateLocus = function() {
