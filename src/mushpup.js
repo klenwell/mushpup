@@ -94,31 +94,53 @@ var LocusValidator = function(locus) {
   // Validation Methods
   var validateLocus = function(locus) {
     self.errors = [];
-    self.errors.concat(validateModifierSyntax(locus));
-    self.errors.concat(validateModifierConflicts(locus));
+    self.errors = self.errors.concat(validateModifierSyntax(locus));
+    self.errors = self.errors.concat(validateModifierConflicts(locus));
   };
 
-  var validateModifierSyntax = function() {
-    var errors = [];
-
+  var validateModifierSyntax = function(locus) {
     if ( ! hasModifierClause(locus) ) {
-      return errors;
+      return [];
     }
-    else {
-      var locusTerms = locus.split('/');
-      var modifierClause = locusTerms[locusTerms.length - 1];
-      for ( var n=0; n < modifierClause.length; n++ ) {
-        var modifier = modifierClause[n];
-        if ( VALID_MODS.indexOf(modifier) < 0 ) {
-          self.errors.push(['invalid modifier', 'Invalid modifier: ' + modifier]);
-        }
-      }
 
-      return errors
+    var errors = [];
+    var locusTerms = locus.split('/');
+    var modifierClause = locusTerms[locusTerms.length - 1];
+
+    // Look for invalid modifiers.
+    for ( var n=0; n < modifierClause.length; n++ ) {
+      var modifier = modifierClause[n];
+      if ( VALID_MODS.indexOf(modifier) < 0 ) {
+        errors.push(['invalid modifier', 'Invalid modifier: ' + modifier]);
+      }
     }
+
+    return errors;
   };
 
-  var validateModifierConflicts = function() {
+  var validateModifierConflicts = function(locus) {
+    if ( ! hasModifierClause(locus) ) {
+      return [];
+    }
+
+    var errors = [];
+    var locusTerms = locus.split('/');
+    var modifierClause = locusTerms[locusTerms.length - 1];
+
+    var isExclusiveModifier = function(modifier) {
+      return MUTEX_MODS.indexOf(modifier) > -1;
+    };
+
+    var mutexModifiers = modifierClause.split('').filter(isExclusiveModifier);
+
+    if ( mutexModifiers.length > 1 ) {
+      errors.push([
+        'conflicting modifiers',
+        'Conflicting modifiers (use only one of these): ' + mutexModifiers.join(', ')
+      ]);
+    }
+
+    return errors;
   };
 
   // Normalization Methods

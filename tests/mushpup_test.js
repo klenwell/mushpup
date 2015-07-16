@@ -98,7 +98,7 @@
       var locusInput = testCase[0];
       var expects = testCase[1];
       var locus = new LocusValidator(locusInput);
-      equal(locus.valid(), expects);
+      equal(locus.valid(), expects, locusInput + ' not validated as expected.');
     });
   });
 })();
