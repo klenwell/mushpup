@@ -81,7 +81,7 @@ var LocusValidator = function(locus) {
    * Public Methods
    */
   this.valid = function() {
-    return this.errors.length < 1;
+    return self.errors.length < 1;
   };
 
   this.value = function() {
@@ -92,12 +92,30 @@ var LocusValidator = function(locus) {
    * Private Methods
    */
   // Validation Methods
-  var validateLocus = function() {
-    validateModifierSyntax();
-    validateModifierConflicts();
+  var validateLocus = function(locus) {
+    self.errors = [];
+    self.errors.concat(validateModifierSyntax(locus));
+    self.errors.concat(validateModifierConflicts(locus));
   };
 
   var validateModifierSyntax = function() {
+    var errors = [];
+
+    if ( ! hasModifierClause(locus) ) {
+      return errors;
+    }
+    else {
+      var locusTerms = locus.split('/');
+      var modifierClause = locusTerms[locusTerms.length - 1];
+      for ( var n=0; n < modifierClause.length; n++ ) {
+        var modifier = modifierClause[n];
+        if ( VALID_MODS.indexOf(modifier) < 0 ) {
+          self.errors.push(['invalid modifier', 'Invalid modifier: ' + modifier]);
+        }
+      }
+
+      return errors
+    }
   };
 
   var validateModifierConflicts = function() {
@@ -139,33 +157,15 @@ var LocusValidator = function(locus) {
   };
 
   var uniquifyModifiersWithWarning = function(locus) {
-    // Remove duplicate modifiers
+    // Remove duplicate modifiers: ++a!a -> +a!
     var uniqueModifierLocus = locus;
-    var potentialModifierString = '';
-    var locusSegments = locus.split('/');
-
-    // Isolate last segment of locus to look for modifiers
-    if ( locusSegments.length > 1 ) {
-      potentialModifierString = locusSegments[locusSegments.length - 1];
-    }
-
-    // Escape regex chars: http://stackoverflow.com/a/9310752/1093087
-    var modifierRegexStr = VALID_MODS.join('').replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&');
-    var modifierInclusionRegex = new RegExp('[' + modifierRegexStr + ']');
-    var hasModifierString = modifierInclusionRegex.test(potentialModifierString);
 
     // Filter out duplicate modifiers
     // WARNING: this could be an issue if user were to use locus unconventionally
-    if ( hasModifierString ) {
-      // Source: http://stackoverflow.com/a/19301868/1093087
-      locusSegments[locusSegments.length - 1] =
-        potentialModifierString
-          .split('')
-          .filter(function(modifier, i, a) {
-            return a.indexOf(modifier) === i;
-          })
-          .join('');
-
+    if ( hasModifierClause(locus) ) {
+      var locusSegments = locus.split('/');
+      var modifierClause = locusSegments[locusSegments.length - 1];
+      locusSegments[locusSegments.length - 1] = uniquifyStringCharacters(modifierClause);
       uniqueModifierLocus = locusSegments.join('/');
     }
 
@@ -174,6 +174,33 @@ var LocusValidator = function(locus) {
     }
 
     return uniqueModifierLocus;
+  };
+
+  var hasModifierClause = function(locus) {
+    var locusSegments = locus.split('/');
+
+    // Isolate last segment of locus to look for modifiers
+    if ( locusSegments.length <= 1 ) {
+      return false;
+    }
+    else {
+      var potentialModifierString = locusSegments[locusSegments.length - 1];
+    }
+
+    // Escape regex chars: http://stackoverflow.com/a/9310752/1093087
+    var modifierRegexStr = VALID_MODS.join('').replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&');
+    var modifierInclusionRegex = new RegExp('[' + modifierRegexStr + ']');
+
+    return modifierInclusionRegex.test(potentialModifierString);
+  };
+
+  var uniquifyStringCharacters = function(str) {
+    // Source: http://stackoverflow.com/a/19301868/1093087
+    var isFirstOccurrenceInArray = function(element, index, arr) {
+      return arr.indexOf(element) === index;
+    };
+
+    return str.split('').filter(isFirstOccurrenceInArray).join('');
   };
 
   // Init and return object
