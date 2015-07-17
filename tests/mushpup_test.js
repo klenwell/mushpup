@@ -61,8 +61,10 @@
   test('should remove duplicate modifiers', function() {
     var locusInput = 'mushpup.org/klenwell/++aia';
     var locus = new LocusValidator(locusInput);
-    equal(locus.value(), 'mushpup.org/klenwell/+ai',
+    equal(locus.normalized(), 'mushpup.org/klenwell/+ai',
           'Expected duplicate modifiers to be removed');
+    equal(locus.value(), 'mushpup.org/klenwell',
+          'Expected modifier clause to be truncated');
     equal(locus.warnings.length, 1,
           'Expected 1 warning');
     equal(locus.warnings[0][1], 'Removed duplicate modifiers from site value.',
@@ -72,8 +74,10 @@
   test('should produce 3 normalization warnings', function() {
     var locusInput = '  /mushpup.org//klenwell/++aia/';
     var locus = new LocusValidator(locusInput);
-    equal(locus.value(), 'mushpup.org/klenwell/+ai',
+    equal(locus.normalized(), 'mushpup.org/klenwell/+ai',
           'Expected duplicate modifiers to be removed');
+    equal(locus.value(), 'mushpup.org/klenwell',
+          'Expected modifier clause to be truncated');
     equal(locus.warnings.length, 3,
           'Expected 3 warnings');
     equal(locus.warnings[0][0], 'normalization',
@@ -99,6 +103,30 @@
       var expects = testCase[1];
       var locus = new LocusValidator(locusInput);
       equal(locus.valid(), expects, locusInput + ' not validated as expected.');
+    });
+  });
+})();
+
+(function() {
+  module('Mushpup mush with modifiers');
+
+  test('should generate hash with modifiers', function() {
+    var testCases = [
+      // Locus, Pocus, Expect
+      ['test', '', 'qUqP5cyxm6YcTAhz05Hph5gv'],
+      ['te', 'st', 'qUqP5cyxm6YcTAhz05Hph5gv'],
+      ['', 'test', 'qUqP5cyxm6YcTAhz05Hph5gv'],
+      ['locus', 'pocus', 'dhjcHSkePkdoNZDZwrmZO33v'],
+      ['mushpup.org/klenwell', 'pocus', 'dOyw5hTH46xzHJK1N8bagrAT'],
+      ['mushpup.org/klenwell/*', 'pocus', 'dOyw7-TH46xz7(K1N8ba2#AT'],
+    ];
+
+    testCases.map(function(testCase) {
+      var locusInput = testCase[0];
+      var pocusInput = testCase[1];
+      var expects = testCase[2];
+      equal(Mushpup.mush(locusInput, pocusInput), expects,
+            'Unexpected mush: ' + [locusInput, pocusInput].join(', '));
     });
   });
 })();

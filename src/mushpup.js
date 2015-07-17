@@ -10,9 +10,53 @@ var Mushpup = (function() {
   var VERSION = '3.0';
 
   var basicHash = function(locus, pocus) {
+    return MushpupHasher.basicHash(locus, pocus)
+  };
+
+  var mush = function(locus, pocus) {
+    return MushpupHasher.hashWithModifiers(locus, pocus)
+  };
+
+  var validateLocus = function(locus) {
+    return new LocusValidator(locus);
+  };
+
+  /*
+   * Public Interface
+   */
+  var API = {
+    basicHash: basicHash,
+    mush: mush,
+    validateLocus: validateLocus,
+    version: function() { return VERSION; }
+  };
+  return API;
+})();
+
+
+var MushpupHasher = (function() {
+  // Maps
+  var MUSHPUP_MAP = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789tl';
+  var ALPHA_MAP   = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyzAaBbCcDdEeFf';
+  var NUMERIC_MAP = '0123456789012345678901234567890123456789012345678901234567890123';
+  var SYMBOL_MAP  = '!?@#$%^&*()_+-={}|[]!?@#$%^&*()_+-={}|[]!?@#$%^&*()_+-={}|[]!?@#';
+
+  var basicHash = function(locus, pocus) {
     var hash = base64SHA(locus + pocus);
     hash = normalizeHash(hash);
     return hash.substr(0,24);
+  };
+
+  var hashWithModifiers = function(locus, pocus) {
+    var validatedLocus = new LocusValidator(locus);
+    var modifiers = validatedLocus.modifiers();
+    var hash = basicHash(validatedLocus.value(), pocus);
+
+    if ( modifiers ) {
+      hash = applyModifers(hash, modifiers);
+    }
+
+    return hash;
   };
 
   var normalizeHash = function(hash) {
@@ -26,22 +70,108 @@ var Mushpup = (function() {
     return CryptoJS.enc.Base64.stringify(hashObj);
   };
 
-  /*
-   * validateLocus
-   *
-   * Validates locus string. Returns validator object.
-   */
-  var validateLocus = function(locus) {
-    return new LocusValidator(locus);
+  var applyModifers = function(hash, modifiers) {
+    for (var i=0; i < modifiers.length; i++) {
+      var modifier = modifiers[i];
+
+      if ( modifier == 'a' ) {
+        hash = insertLetterIntoEachStanza(hash);
+      }
+      else if ( modifier == '+' ) {
+        hash = insertNumberIntoEachStanza(hash);
+      }
+      else if ( modifier == '!' ) {
+        hash = insertSymbolIntoEachStanza(hash);
+      }
+      else if ( modifier == '@' ) {
+        hash = alphaNumericOnly(hash);
+      }
+      else if ( modifier == 'A' ) {
+        hash = alphaOnly(hash);
+      }
+      else if ( modifier == '#' ) {
+        hash = numericOnly(hash);
+      }
+      else if ( modifier == '*' ) {
+        hash = insertLetterIntoEachStanza(hash);
+        hash = insertNumberIntoEachStanza(hash);
+        hash = insertSymbolIntoEachStanza(hash);
+      }
+      else {
+        console.warn('Invalid modifier: ' + modifier);
+      }
+    };
+
+    return hash;
+  };
+
+  var insertLetterIntoEachStanza = function(hash) {
+    // Insures one alphabetic character in each stanza.
+    var stanzas = hashToStanzas(hash);
+
+    for (var i=0; i < stanzas.length; i++) {
+      var stanza = stanzas[i];
+
+      // Insert one in 3-spot.
+      var char3 = stanza[3];
+      var mapIndex = MUSHPUP_MAP.indexOf(char3);
+      var alphaChar = ALPHA_MAP[mapIndex];
+      stanzas[i] = stanza.slice(0,3) + alphaChar + stanza.slice(4,8);
+    }
+
+    return stanzas.join('');
+  };
+
+  var insertNumberIntoEachStanza = function(hash) {
+    // Insures one numeric character in each stanza.
+    var stanzas = hashToStanzas(hash);
+
+    for (var i=0; i < stanzas.length; i++) {
+      var stanza = stanzas[i];
+
+      // Insert numeric char in 4-spot.
+      var char4 = stanza[4];
+      var mapIndex = MUSHPUP_MAP.indexOf(char4);
+      var numericChar = NUMERIC_MAP[mapIndex];
+      stanzas[i] = stanza.slice(0,4) + numericChar + stanza.slice(5,8);
+    }
+
+    return stanzas.join('');
+  };
+
+  var insertSymbolIntoEachStanza = function(hash) {
+    // Insures one symbol character in each stanza.
+    var stanzas = hashToStanzas(hash);
+
+    for (var i=0; i < stanzas.length; i++) {
+      var stanza = stanzas[i];
+
+      // Insert symbol in 5-spot.
+      var char5 = stanza[5];
+      var mapIndex = MUSHPUP_MAP.indexOf(char5);
+      var symbol = SYMBOL_MAP[mapIndex];
+      stanzas[i] = stanza.slice(0,5) + symbol + stanza.slice(6,8);
+    }
+
+    return stanzas.join('');
+  };
+
+  var alphaNumericOnly = function(hash) {
+  };
+
+  var alphaOnly = function(hash) {
+  };
+
+  var hashToStanzas = function(hash) {
+    return [hash.slice(0,8), hash.slice(8,16), hash.slice(16,24)];
   };
 
   /*
    * Public Interface
    */
   var API = {
-    mush: basicHash,
-    validateLocus: validateLocus,
-    version: function() { return VERSION; }
+    basicHash: basicHash,
+    hashWithModifiers: hashWithModifiers
   };
   return API;
 })();
@@ -84,8 +214,35 @@ var LocusValidator = function(locus) {
     return self.errors.length < 1;
   };
 
-  this.value = function() {
+  this.input = function() {
+    return rawLocus;
+  };
+
+  this.normalized = function() {
     return normalLocus;
+  };
+
+  this.value = function() {
+    // Remove modifier clause
+    if ( hasModifierClause(normalLocus) ) {
+      var locusTerms = normalLocus.split('/');
+      locusTerms.pop();
+      return locusTerms.join('/');
+    }
+    else {
+      return normalLocus;
+    }
+  };
+
+  this.modifiers = function() {
+    if ( ! hasModifierClause(normalLocus) ) {
+      return null;
+    }
+    else {
+      var locusTerms = normalLocus.split('/');
+      var modifierClause = locusTerms[locusTerms.length - 1];
+      return modifierClause.split('');
+    }
   };
 
   /*
@@ -198,6 +355,7 @@ var LocusValidator = function(locus) {
     return uniqueModifierLocus;
   };
 
+  // Helper Methods
   var hasModifierClause = function(locus) {
     var locusSegments = locus.split('/');
 
