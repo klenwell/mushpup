@@ -38,7 +38,7 @@ var MushpupHasher = (function() {
   // Maps
   var MUSHPUP_MAP = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789tl';
   var ALPHA_MAP   = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyzAaBbCcDdEeFf';
-  var NUMERIC_MAP = '0123456789012345678901234567890123456789012345678901234567890123';
+  var NUMERIC_MAP = '0123456789012345678901234567890123456789012345678901012345678923';
   var SYMBOL_MAP  = '!?@#$%^&*()_+-={}|[]!?@#$%^&*()_+-={}|[]!?@#$%^&*()_+-={}|[]!?@#';
 
   var basicHash = function(locus, pocus) {
@@ -84,7 +84,7 @@ var MushpupHasher = (function() {
         hash = insertSymbolIntoEachStanza(hash);
       }
       else if ( modifier == '@' ) {
-        hash = alphaNumericOnly(hash);
+        hash = hash;
       }
       else if ( modifier == 'A' ) {
         hash = alphaOnly(hash);
@@ -156,10 +156,30 @@ var MushpupHasher = (function() {
     return stanzas.join('');
   };
 
-  var alphaNumericOnly = function(hash) {
+  var alphaOnly = function(hash) {
+    var alphas = [];
+
+    for (var i=0; i < hash.length; i++) {
+      var nextChar = hash[i];
+      var mapIndex = MUSHPUP_MAP.indexOf(nextChar);
+      var alphaChar = ALPHA_MAP[mapIndex];
+      alphas.push(alphaChar);
+    }
+
+    return alphas.join('');
   };
 
-  var alphaOnly = function(hash) {
+  var numericOnly = function(hash) {
+    var numerics = [];
+
+    for (var i=0; i < hash.length; i++) {
+      var nextChar = hash[i];
+      var mapIndex = MUSHPUP_MAP.indexOf(nextChar);
+      var number = NUMERIC_MAP[mapIndex];
+      numerics.push(number);
+    }
+
+    return numerics.join('');
   };
 
   var hashToStanzas = function(hash) {
@@ -185,6 +205,7 @@ var LocusValidator = function(locus) {
   var VALID_MODS = [
     '@',  // alphanumeric characters only
     'A',  // alphabetic characters only
+    '#',  // numeric only
     '*',  // include at least one num, alpha, and special (punctuation) character
     '+',  // include at least one numeric character
     'a',  // include at least one alphabetic character

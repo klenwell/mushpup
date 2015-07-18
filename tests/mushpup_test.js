@@ -117,8 +117,11 @@
       ['te', 'st', 'qUqP5cyxm6YcTAhz05Hph5gv'],
       ['', 'test', 'qUqP5cyxm6YcTAhz05Hph5gv'],
       ['locus', 'pocus', 'dhjcHSkePkdoNZDZwrmZO33v'],
-      ['mushpup.org/klenwell', 'pocus', 'dOyw5hTH46xzHJK1N8bagrAT'],
-      ['mushpup.org/klenwell/*', 'pocus', 'dOyw7-TH46xz7(K1N8ba2#AT'],
+      ['mushpup.org/klenwell',   'pocus', 'dOyw5hTH46xzHJK1N8bagrAT'],
+      ['mushpup.org/klenwell/*', 'pocus', 'dOyw5-TH46xz7(K1N8ba2#AT'],
+      ['mushpup.org/klenwell/A', 'pocus', 'dOywchTHCDxzHJKaNEbagrAT'],
+      ['mushpup.org/klenwell/#', 'pocus', '940853974691790138762309'],
+      ['mushpup.org/klenwell/a+!', 'pocus', 'dOyw5-TH46xz7(K1N8ba2#AT'],
     ];
 
     testCases.map(function(testCase) {
@@ -128,5 +131,17 @@
       equal(Mushpup.mush(locusInput, pocusInput), expects,
             'Unexpected mush: ' + [locusInput, pocusInput].join(', '));
     });
+  });
+
+  test('that non-exclusive modifiers are commutative', function() {
+    var baseLocus = 'mushpup.org/klenwell/';
+    var pocus = 'pocus';
+
+    equal(Mushpup.mush(baseLocus + 'a+!', pocus),
+          Mushpup.mush(baseLocus + '!+a', pocus));
+    equal(Mushpup.mush(baseLocus + '+!a', pocus),
+          Mushpup.mush(baseLocus + '!a+', pocus));
+    equal(Mushpup.mush(baseLocus + 'a+!', pocus),
+          Mushpup.mush(baseLocus + '*', pocus));
   });
 })();
