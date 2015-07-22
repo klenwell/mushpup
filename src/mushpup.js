@@ -59,15 +59,15 @@ var MushpupHasher = (function() {
     return hash;
   };
 
+  var base64SHA = function(str) {
+    var hashObj = CryptoJS.SHA1(str);
+    return CryptoJS.enc.Base64.stringify(hashObj);
+  };
+
   var normalizeHash = function(hash) {
     return hash
       .replace(/\+/g, 't')
       .replace(/\//g, 'l');
-  };
-
-  var base64SHA = function(str) {
-    var hashObj = CryptoJS.SHA1(str);
-    return CryptoJS.enc.Base64.stringify(hashObj);
   };
 
   var applyModifers = function(hash, modifiers) {
