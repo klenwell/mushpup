@@ -22,6 +22,38 @@ Mushpup requires the SHA1 and Base64 algorithms. It currently uses the
     <script src="https://rawgit.com/klenwell/mushpup/master/src/mushpup.js"></script>
 
 
+## Tests
+Automated tests can be run using `grunt-cli`:
+
+    cd mushpup
+    ./node_modules/grunt-cli/bin/grunt
+
+To set up grunt on Debian/Ubuntu:
+
+1. Clone the repository
+
+    ```
+    git clone git@github.com:klenwell/mushpup.git mushpup
+    ```
+
+2. [Install Node.js (with npm)](https://github.com/joyent/node/wiki/Installing-Node.js-via-package-manager).
+3. Install npm packages:
+
+    ```
+    npm install grunt-cli
+    npm install phantomjs
+    ```
+
+4. Install npm package dependencies:
+
+    ```
+    cd mushpup
+    npm install
+    ```
+
+You should be good to test.
+
+
 ## Usage
 
 A Mushpup hash is a 24-character string of characters from which a user my reliably retrieve
