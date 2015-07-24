@@ -26,7 +26,7 @@ Mushpup requires the SHA1 and Base64 algorithms. It currently uses the
 Automated tests can be run using `grunt-cli`:
 
     cd mushpup
-    ./node_modules/grunt-cli/bin/grunt
+    npm test
 
 To set up grunt on Debian/Ubuntu:
 
