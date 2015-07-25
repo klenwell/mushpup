@@ -8,11 +8,11 @@ var MushpupUI = (function() {
 
   var VERSION = '2.0';
 
-  var init = function(parentId) {
-    var $parentElement = $('#' + parentId);
+  var init = function(selector) {
+    var $selectedElement = $(selector);
     var $mushpupInterface = buildInterface();
-    $parentElement.append(mushpupInterface);
-    enableHandlers($parentElement);
+    $selectedElement.append($mushpupInterface);
+    enableHandlers($selectedElement);
   };
 
   var buildInterface = function() {
