@@ -1,5 +1,7 @@
 # Mushpup
 
+[![Build Status](https://travis-ci.org/klenwell/mushpup.svg?branch=master)](https://travis-ci.org/klenwell/mushpup)
+
 Passwords obviously are important and most people know by this time how to pick a good one.
 
 For many people, the problem is not so much that their password is weak and too easy
@@ -26,7 +28,7 @@ Mushpup requires the SHA1 and Base64 algorithms. It currently uses the
 Automated tests can be run using `grunt-cli`:
 
     cd mushpup
-    ./node_modules/grunt-cli/bin/grunt
+    npm test
 
 To set up grunt on Debian/Ubuntu:
 
