@@ -58,7 +58,7 @@ You should be good to test.
 
 ## Usage
 
-A Mushpup hash is a 24-character string of characters from which a user my reliably retrieve
+A Mushpup hash is a 24-character string of characters from which a user may reliably retrieve
 a site-specific password, based on a master password only she knows and a simple routine.
 
 ### Developers
