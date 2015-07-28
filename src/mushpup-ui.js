@@ -55,6 +55,18 @@ var MushpupUI = (function() {
   };
 
   var buildActionPanel = function() {
+    var $actionPanel = $('<div class="action-panel" />');
+
+    var $confirmAction = buildCircleAction('confirm');
+    var $mushAction = buildMushAction();
+    var $resetAction = buildCircleAction('reset');
+
+    $actionPanel
+      .append($confirmAction)
+      .append($mushAction)
+      .append($resetAction)
+
+    return $actionPanel;
   };
 
   var buildOutputPanel = function() {
@@ -91,6 +103,17 @@ var MushpupUI = (function() {
 
     $pocusConfirmGroup.append($input).append($p);
     return $pocusConfirmGroup;
+  };
+
+  var buildCircleAction = function(action) {
+    var $actionSpan = $('<span class="action" />').addClass(action);
+    var $buttonSpan = $('<span class="circle button" />').text(action);
+
+    $actionSpan.append($buttonSpan);
+    return $actionSpan
+  };
+
+  var buildMushAction = function() {
   };
 
   /*
