@@ -12,3 +12,4 @@
 # Project excludes
 node_modules
 npm-debug.log
+tests/dev.html
