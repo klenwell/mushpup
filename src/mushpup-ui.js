@@ -64,12 +64,22 @@ var MushpupUI = (function() {
     $actionPanel
       .append($confirmAction)
       .append($mushAction)
-      .append($resetAction)
+      .append($resetAction);
 
     return $actionPanel;
   };
 
   var buildOutputPanel = function() {
+    var $outputPanel = $('<div class="output-panel" />');
+
+    var $alertsBlock = $('<div class="alerts" />');
+    var $payloadBlock = $('<div class="payload" />');
+
+    $actionPanel
+      .append($alertsBlock)
+      .append($payloadBlock);
+
+    return $outputPanel;
   };
 
   var buildLocusFormGroup = function() {
