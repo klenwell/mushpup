@@ -72,8 +72,8 @@ var MushpupUI = (function() {
   var buildOutputPanel = function() {
     var $outputPanel = $('<div class="output-panel" />');
 
-    var $alertsBlock = $('<div class="alerts" />');
-    var $payloadBlock = $('<div class="payload" />');
+    var $alertsBlock = buildAlertsBlock();
+    var $payloadBlock = buildPayloadBlock();
 
     $outputPanel
       .append($alertsBlock)
@@ -136,11 +136,29 @@ var MushpupUI = (function() {
 
   var buildAlertsBlock = function() {
     var $alertsBlock = $('<div class="alerts" />');
+    var $helpAlerts = $('<div class="help-alerts" />');
+    var $errorAlerts = $('<div class="error-alerts" />');
+    var $warningAlerts = $('<div class="warning-alerts" />');
+
+    $alertsBlock
+      .append($helpAlerts)
+      .append($errorAlerts)
+      .append($warningAlerts);
+
     return $alertsBlock;
   };
 
   var buildPayloadBlock = function() {
     var $payloadBlock = $('<div class="payload" />');
+    var $upperRuler = $('<div class="upper ruler" />');
+    var $hash = $('<div class="hash" />');
+    var $lowerRuler = $('<div class="lower ruler" />');
+
+    $payloadBlock
+      .append($upperRuler)
+      .append($hash)
+      .append($lowerRuler);
+
     return $payloadBlock;
   };
 

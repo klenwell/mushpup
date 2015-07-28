@@ -63,4 +63,16 @@
     equal($('span.action.reset span.button').text(), 'reset');
     ok($('div.form-group.pocus-confirm').hasClass('rolled-up'));
   });
+
+  test('should display mushpup output panel', function() {
+    equal($('div.output-panel').length, 0);
+    equal($('div.alerts').length, 0);
+    equal($('div.payload').length, 0);
+
+    ui.init('div#qunit-fixture');
+
+    equal($('div.output-panel').length, 1, 'div.output-panel not loaded');
+    equal($('div.alerts').length, 1, 'alerts block not loaded');
+    equal($('div.payload').length, 1, 'payload block not loaded');
+  });
 })();
