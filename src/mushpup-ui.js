@@ -75,7 +75,7 @@ var MushpupUI = (function() {
     var $alertsBlock = $('<div class="alerts" />');
     var $payloadBlock = $('<div class="payload" />');
 
-    $actionPanel
+    $outputPanel
       .append($alertsBlock)
       .append($payloadBlock);
 
@@ -124,6 +124,24 @@ var MushpupUI = (function() {
   };
 
   var buildMushAction = function() {
+    var $mushSpan = $('<span class="action mush" />');
+    var $mushButton =
+      $('<button type="submit" />')
+        .text('mush')
+        .addClass('btn btn-lg btn-primary btn-block');
+
+    $mushSpan.append($mushButton);
+    return $mushSpan;
+  };
+
+  var buildAlertsBlock = function() {
+    var $alertsBlock = $('<div class="alerts" />');
+    return $alertsBlock;
+  };
+
+  var buildPayloadBlock = function() {
+    var $payloadBlock = $('<div class="payload" />');
+    return $payloadBlock;
   };
 
   /*
