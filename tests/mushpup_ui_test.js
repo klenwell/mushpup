@@ -43,6 +43,7 @@
     equal($('div.input-panel').length, 1, 'div.input-panel not loaded');
     equal($('div.form-group.locus').length, 1, 'locus form group not loaded');
     equal($('div.form-group.pocus').length, 1, 'pocus form group not loaded');
-    equal($('div.form-group.confirmation').length, 0);  // Hidden
+    equal($('div.form-group.pocus-confirm').length, 1, 'pocus-confirm form group not loaded');
+    ok($('div.form-group.pocus-confirm').hasClass('rolled-up'));
   });
 })();

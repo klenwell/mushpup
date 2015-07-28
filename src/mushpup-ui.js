@@ -40,12 +40,12 @@ var MushpupUI = (function() {
 
     var $locusGroup = buildLocusFormGroup();
     var $pocusGroup = buildPocusFormGroup();
-    var $confirmationGroup = buildConfirmationGroup();
+    var $pocusConfirmGroup = buildPocusConfirmFormGroup();
 
     $fieldset
       .append($locusGroup)
       .append($pocusGroup)
-      .append($confirmationGroup);
+      .append($pocusConfirmGroup);
 
     $inputPanel
       .append($form)
@@ -63,7 +63,7 @@ var MushpupUI = (function() {
   var buildLocusFormGroup = function() {
     var $locusGroup = $('<div class="form-group locus" />');
     var $input = $('<input type="text" id="locus" class="form-control" autofocus />');
-    var $p = $('<p class="hidden warn warn-site" />');
+    var $p = $('<p class="hidden warn warn-locus" />');
 
     $input.attr('placeholder', 'site (e.g. yahoo.com)');
 
@@ -72,9 +72,25 @@ var MushpupUI = (function() {
   };
 
   var buildPocusFormGroup = function() {
+    var $pocusGroup = $('<div class="form-group pocus" />');
+    var $input = $('<input type="password" id="pocus" class="form-control" />');
+    var $p = $('<p class="hidden warn warn-pocus" />');
+
+    $input.attr('placeholder', 'mushpup secret word');
+
+    $pocusGroup.append($input).append($p);
+    return $pocusGroup;
   };
 
-  var buildConfirmationGroup = function() {
+  var buildPocusConfirmFormGroup = function() {
+    var $pocusConfirmGroup = $('<div class="form-group rolled-up pocus-confirm" />');
+    var $input = $('<input type="password" id="pocus-confirm" class="form-control" />');
+    var $p = $('<p class="hidden warn warn-pocus-confirm" />');
+
+    $input.attr('placeholder', 'confirm secret word');
+
+    $pocusConfirmGroup.append($input).append($p);
+    return $pocusConfirmGroup;
   };
 
   /*
