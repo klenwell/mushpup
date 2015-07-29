@@ -235,7 +235,6 @@ var MushpupUI = (function() {
 
   var prepareConfirmButtonHandler = function() {
     $('span.button.confirm').on('click', function() {
-      console.debug('clicked confirm button');
       toggleConfirmField();
     });
   };
