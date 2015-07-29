@@ -159,7 +159,7 @@ var MushpupUI = (function() {
 
   var buildCircleAction = function(action) {
     var $actionSpan = $('<span class="action" />').addClass(action);
-    var $buttonSpan = $('<span class="circle button" />').text(action);
+    var $buttonSpan = $('<span class="circle button" />').addClass(action).text(action);
 
     $actionSpan.append($buttonSpan);
     return $actionSpan
@@ -227,9 +227,17 @@ var MushpupUI = (function() {
     });
   };
 
-  var prepareResetButtonHandler = function() {};
+  var prepareResetButtonHandler = function() {
+    $('span.button.reset').on('click', function() {
+      resetForm();
+    });
+  };
 
-  var prepareConfirmButtonHandler = function() {};
+  var prepareConfirmButtonHandler = function() {
+    $('span.button.confirm').on('click', function() {
+      toggleConfirmField();
+    });
+  };
 
   var formIsOpen = function() {
     return !!($('button.mush').data('form-open'));
@@ -390,6 +398,14 @@ var MushpupUI = (function() {
     // Returns promise that can be used for callback when form present
     var formIsVisible = $('div.input-panel fieldset').promise();
     return formIsVisible;
+  };
+
+  var toggleConfirmField = function() {
+    $('div.confirmation').slideToggle('slow', function() {
+      if ( $("div.confirmation").is(":visible") ) {
+        $('input#pocus-confirm').focus();
+      }
+    });
   };
 
   /*
