@@ -3,7 +3,7 @@ module.exports = function(grunt) {
     pkg: grunt.file.readJSON('package.json'), // the package file to use
 
     qunit: {
-      all: ['tests/*.html']
+      all: ['tests/test.html']
     }
   });
   // load up your plugins
