@@ -89,9 +89,9 @@ var MushpupUI = (function() {
       .append($pocusGroup)
       .append($pocusConfirmGroup);
 
-    $inputPanel
-      .append($form)
-      .append($fieldset);
+    $form.append($fieldset);
+
+    $inputPanel.append($form);
 
     return $inputPanel;
   };
@@ -235,6 +235,7 @@ var MushpupUI = (function() {
 
   var prepareConfirmButtonHandler = function() {
     $('span.button.confirm').on('click', function() {
+      console.debug('clicked confirm button');
       toggleConfirmField();
     });
   };
@@ -244,9 +245,8 @@ var MushpupUI = (function() {
   };
 
   var onMush = function() {
-    console.debug('onMush');
     // Validate confirm field if present
-    var confirmFieldIsPresent = $("div.confirmation").is(":visible");
+    var confirmFieldIsPresent = $("div.pocus-confirm").is(":visible");
 
     if ( confirmFieldIsPresent ) {
       var pocus = $('input#pocus').val().trim();
@@ -277,7 +277,6 @@ var MushpupUI = (function() {
   };
 
   var onUnmush = function() {
-    console.debug('onUnmush');
     clearTimeout(unmushTimer);
     clearPayload();
     restartResetTimer();
@@ -285,7 +284,6 @@ var MushpupUI = (function() {
   };
 
   var toggleForm = function() {
-    console.debug('toggleForm');
     $('div.input-panel fieldset').slideToggle('slow');
     $('div.output-panel').slideToggle('slow', swapFormState);
   };
@@ -401,11 +399,17 @@ var MushpupUI = (function() {
   };
 
   var toggleConfirmField = function() {
-    $('div.confirmation').slideToggle('slow', function() {
-      if ( $("div.confirmation").is(":visible") ) {
+    $('div.pocus-confirm').slideToggle('slow', function() {
+      if ( $("div.pocus-confirm").is(":visible") ) {
         $('input#pocus-confirm').focus();
       }
     });
+  };
+
+  var rollupConfirmField = function() {
+    if ( $("div.pocus-confirm").is(":visible") ) {
+      toggleConfirmField();
+    }
   };
 
   /*

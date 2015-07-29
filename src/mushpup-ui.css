@@ -1,0 +1,148 @@
+/*
+ * State Rules
+ */
+.rolled-up {
+  display: none;
+}
+
+div.mushpup {
+  max-width: 384px;
+  padding: 40px 0px;
+  margin: 0 auto;
+}
+
+
+/*
+ * Input Form
+ */
+div.mushpup form {}
+div.mushpup form .form-control {
+  position: relative;
+  height: auto;
+  -webkit-box-sizing: border-box;
+     -moz-box-sizing: border-box;
+          box-sizing: border-box;
+  padding: 10px;
+  font-size: 16px;
+}
+div.mushpup form .form-control:focus {
+  z-index: 2;
+}
+div.mushpup form input[type="locus"] {
+  margin-bottom: -1px;
+  border-bottom-right-radius: 0;
+  border-bottom-left-radius: 0;
+}
+div.mushpup form input[type="pocus"] {
+  margin-bottom: 10px;
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+}
+
+div.action-panel {
+  width: 100%;
+  margin: 0 auto;
+  padding: 0;
+}
+div.action-panel span.action {
+  display: inline-block;
+  margin: 0 auto;
+  padding: 0;
+  text-align: center;
+  width: 16%;
+}
+div.action-panel span.action.mush {
+  width: 64%;
+}
+div.action-panel button.mush {
+  display: inline-block;
+  margin: 0 auto;
+}
+div.action-panel span.circle {
+  display: inline-block;
+  width: 50px;
+  height: 50px;
+  border-radius: 25px;
+  -moz-border-radius: 25px;
+  -webkit-border-radius: 25px;
+  line-height: 50px;
+}
+div.action-panel span.circle.button {
+  text-align: center;
+  background-color: #337ab7;
+  box-shadow: 0 0 2px #2e6da4;
+  cursor: pointer;
+  color: white;
+}
+div.action-panel span.circle.button:hover {
+  background-color: #286090;
+  box-shadow: 0 0 2px #204d74;
+}
+
+/*
+ * Reveal Panel
+ */
+div.output-panel {
+  display: none;
+  margin-top: 8px;
+  width: 100%;
+}
+
+div.output-panel div.payload {
+  margin: 0 auto;
+  width: 100%;
+  background-color: #eee;
+  text-align: center;
+}
+div.output-panel div.payload span.c {
+  display: inline-block;
+  width: 16px;
+  text-align: center;
+  padding: 0px;
+  margin: 0px;
+  font-family: Inconsolata,"Lucida Console",Monaco,monospace;
+}
+
+div.output-panel div.payload div.ruler {
+  background-color: white;
+  font-size: 14px;
+}
+div.output-panel div.payload div.ruler.upper {
+  color: red;
+  border-top: solid red 1px;
+  border-bottom: solid red 1px;
+}
+div.output-panel div.payload div.ruler.lower {
+  color: blue;
+  border-top: solid blue 1px;
+  border-bottom: solid blue 1px;
+}
+div.output-panel div.payload div.ruler span.c {}
+
+div.output-panel div.payload div.hash {
+  margin: 0 auto;
+  padding: 0;
+  width: 100%;
+  background-color: white;
+  text-align: center;
+}
+div.output-panel div.payload div.hash span.group {
+  padding: 0;
+  display: inline-block;
+}
+div.payload div.hash span.group.west {
+  background-color: #ffdddd;
+  color: white;
+}
+div.payload div.hash span.group.east {
+  background-color: #ddddff;
+  color: white;
+}
+div.payload div.hash span.group.central {
+  background-color: white;
+  color: #dddddd;
+}
+div.output-panel div.payload div.hash span.c {
+  font-size: 20px;
+  padding: 4px 0;
+}
