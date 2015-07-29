@@ -15,7 +15,7 @@
 (function() {
   var ui;
 
-  module('Mushpup-UI DOM manipulation', {
+  module('Mushpup-UI DOM initialization', {
     setup: function() {
       ui = MushpupUI();
     },

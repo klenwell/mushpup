@@ -8,6 +8,14 @@ var MushpupUI = (function() {
 
   var VERSION = '2.0';
 
+  // Constants
+  var MUSH_TIMEOUT = 15;  // seconds
+  var RESET_TIMEOUT = 60;
+
+  // Globals
+  var unmushTimer;
+  var resetTimer;
+
   var init = function(selector) {
     var $selectedElement = $(selector);
     var $mushpupInterface = buildInterface();
@@ -162,7 +170,7 @@ var MushpupUI = (function() {
     var $mushButton =
       $('<button type="submit" />')
         .text('mush')
-        .addClass('btn btn-lg btn-primary btn-block');
+        .addClass('btn btn-lg btn-primary btn-block mush');
 
     $mushSpan.append($mushButton);
     return $mushSpan;
@@ -199,11 +207,190 @@ var MushpupUI = (function() {
   /*
    * Event Handlers
    */
-  var prepareMushButtonHandler = function() {};
+  var prepareMushButtonHandler = function() {
+    $('button.mush').data('form-open', true);
+    $('button.mush').on('click', function() {
+      var ok = false;
+
+      if ( formIsOpen() ) {
+        ok = onMush();
+      }
+      else {
+        ok = onUnmush();
+      }
+
+      if ( ok ) {
+        toggleForm();
+      }
+
+      return false;
+    });
+  };
 
   var prepareResetButtonHandler = function() {};
 
   var prepareConfirmButtonHandler = function() {};
+
+  var formIsOpen = function() {
+    return !!($('button.mush').data('form-open'));
+  };
+
+  var onMush = function() {
+    console.debug('onMush');
+    // Validate confirm field if present
+    var confirmFieldIsPresent = $("div.confirmation").is(":visible");
+
+    if ( confirmFieldIsPresent ) {
+      var pocus = $('input#pocus').val().trim();
+      var confirmation = $('input#pocus-confirm').val().trim();
+
+      if ( pocus !== confirmation ) {
+        alert("Your mushpup secret words didn't match. Please carefully re-enter them.");
+        return false;
+      }
+    }
+
+    // Generate hash
+    var hash = generateHash();
+    validateInput();
+    updateHash(hash);
+    $('button.mush').text('unmush');
+
+    // Unmush after given period of time
+    clearTimeout(unmushTimer);
+    unmushTimer = setTimeout(function() {
+      $('button.mush').click();
+    }, MUSH_TIMEOUT * 1000);
+
+    // Reset form completely after given period of time
+    restartResetTimer();
+
+    return true;
+  };
+
+  var onUnmush = function() {
+    console.debug('onUnmush');
+    clearTimeout(unmushTimer);
+    clearPayload();
+    restartResetTimer();
+    return true;
+  };
+
+  var toggleForm = function() {
+    console.debug('toggleForm');
+    $('div.input-panel fieldset').slideToggle('slow');
+    $('div.output-panel').slideToggle('slow', swapFormState);
+  };
+
+  var generateHash = function() {
+    var locus = $('input#locus').val().trim();
+    var pocus = $('input#pocus').val().trim();
+    return Mushpup.mush(locus, pocus);
+  };
+
+  var validateInput = function() {
+    var $warnings = $('div.alerts div.warning-alerts');
+    var site = $('input#locus').val().trim();
+    var msw = $('input#pocus').val().trim();
+
+    // Clear any warning
+    $warnings.empty();
+
+    // Add any new warnings
+    var addWarning = function(message, style) {
+      style = (! style) ? 'warning' : style;
+      var alertClass = 'alert alert-dismissible alert-' + style;
+      var $button = $([
+        '<button type="button" class="close" data-dismiss="alert">',
+        '<span aria-hidden="true">&times;</span>',
+        '<span class="sr-only">Close</span>',
+        '</button>'].join('\n'));
+      var $messageSpan = $('<span />').text(message);
+      var $alert = $('<div role="alert" />')
+        .addClass(alertClass)
+        .append($button)
+        .append($messageSpan);
+      $warnings.append($alert);
+    }
+
+    if ( ! site ) {
+      addWarning('Site field was empty');
+    }
+
+    if ( ! msw ) {
+      addWarning('Mushpup Secret Word field was empty')
+    }
+  };
+
+  var updateHash = function(hashCode) {
+    var groups = ['west', 'central', 'east'];
+    var hashCodeLetters = hashCode.split('');
+
+    // Empty hash row
+    var $hashRow = $('div.output-panel div.hash');
+    $hashRow.empty();
+
+    // Build groups of ruler characters
+    jQuery.each(groups, function(n, group) {
+      var $hashGroup = $('<span />').addClass('group ' + group);
+
+      for (var i=0; i < 8; i++) {
+        var index = n * 8 + i;
+        var letter = hashCodeLetters[index];
+        var $letterSpan = $('<span />').addClass('c').text(letter);
+        $hashGroup.append($letterSpan);
+      }
+
+      $hashRow.append($hashGroup);
+    });
+  };
+
+  var restartResetTimer = function() {
+    clearTimeout(resetTimer);
+    resetTimer = setTimeout(function() {
+      resetForm();
+    }, RESET_TIMEOUT * 1000);
+  };
+
+  var clearPayload = function() {
+    $('button.mush').text('mush');
+    var hash = '------------------------'.replace(/-/g, '•');
+    updateHash(hash);
+  };
+
+  var swapFormState = function() {
+    $('button.mush').data('form-open', !(formIsOpen()));
+  };
+
+  var resetForm = function() {
+    clearTimeout(unmushTimer);
+    clearTimeout(resetTimer);
+    clearPayload();
+    clearInputFields();
+    var formIsVisible = showForm();
+
+    $.when(formIsVisible).then(function() {
+      rollupConfirmField();
+      $('input#locus').focus();
+    });
+  };
+
+  var clearInputFields = function() {
+    $('input#locus').val('');
+    $('input#pocus').val('');
+    $('input#pocus-confirm').val('');
+  };
+
+  var showForm = function() {
+    $('div.input-panel fieldset').slideDown('slow', function() {
+      $('button.mush').data('form-open', true);
+    });
+    $('div.output-panel').slideUp('slow');
+
+    // Returns promise that can be used for callback when form present
+    var formIsVisible = $('div.input-panel fieldset').promise();
+    return formIsVisible;
+  };
 
   /*
    * Public Interface
