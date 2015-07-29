@@ -68,11 +68,15 @@
     equal($('div.output-panel').length, 0);
     equal($('div.alerts').length, 0);
     equal($('div.payload').length, 0);
+    equal($('div.upper.ruler span.c').length, 0);
+    equal($('div.lower.ruler span.c').length, 0);
 
     ui.init('div#qunit-fixture');
 
     equal($('div.output-panel').length, 1, 'div.output-panel not loaded');
     equal($('div.alerts').length, 1, 'alerts block not loaded');
     equal($('div.payload').length, 1, 'payload block not loaded');
+    equal($('div.upper.ruler span.c').length, 24, 'upper ruler not loaded');
+    equal($('div.lower.ruler span.c').length, 24, 'lower ruler not loaded');
   });
 })();

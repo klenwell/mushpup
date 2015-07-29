@@ -12,6 +12,8 @@ var MushpupUI = (function() {
     var $selectedElement = $(selector);
     var $mushpupInterface = buildInterface();
     $selectedElement.append($mushpupInterface);
+
+    prepareRuler();
     enableHandlers($selectedElement);
   };
 
@@ -29,10 +31,42 @@ var MushpupUI = (function() {
     return $mushpupInterface;
   };
 
-  var enableHandlers = function() {
+  var prepareRuler = function() {
+    var upperRuler = '>***5****0****5****0***>';
+    var lowerRuler = '<***0****5****0****5***<';
+    var groups = ['west', 'central', 'east'];
+    var $upperRuler = $('div.upper.ruler');
+    var $lowerRuler = $('div.lower.ruler');
+
+    // Build groups of ruler characters
+    jQuery.each(groups, function(n, group) {
+      var $upperGroup = $('<span />').addClass('upper group ' + group);
+      var $lowerGroup = $('<span />').addClass('lower group ' + group);
+
+      for (var i=0; i < 8; i++) {
+        var index = n * 8 + i;
+        var upperChar = upperRuler[index].replace('*', '&bull;');
+        var lowerChar = lowerRuler[index].replace('*', '&bull;');
+        var $upperSpan = $('<span />').addClass('c').html(upperChar);
+        var $lowerSpan = $('<span />').addClass('c').html(lowerChar);
+        $upperGroup.append($upperSpan);
+        $lowerGroup.append($lowerSpan);
+      }
+
+      $upperRuler.append($upperGroup);
+      $lowerRuler.append($lowerGroup);
+    });
   };
 
-  // DOM Builders
+  var enableHandlers = function() {
+    prepareMushButtonHandler();
+    prepareResetButtonHandler();
+    prepareConfirmButtonHandler();
+  };
+
+  /*
+   * DOM Builders
+   */
   var buildInputPanel = function() {
     var $inputPanel = $('<div class="input-panel" />');
     var $form = $('<form />');
@@ -161,6 +195,15 @@ var MushpupUI = (function() {
 
     return $payloadBlock;
   };
+
+  /*
+   * Event Handlers
+   */
+  var prepareMushButtonHandler = function() {};
+
+  var prepareResetButtonHandler = function() {};
+
+  var prepareConfirmButtonHandler = function() {};
 
   /*
    * Public Interface
