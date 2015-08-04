@@ -144,4 +144,22 @@
     equal(Mushpup.mush(baseLocus + 'a+!', pocus),
           Mushpup.mush(baseLocus + '*', pocus));
   });
+
+  test('should not detect modifiers', function() {
+    // This was an issue: https://github.com/klenwell/mushpup/issues/5
+    var testCases = [
+      // Locus, Pocus, Expect
+      ['abc', 'test', 'SUQK587Jg65hVbHU2A7ne9Bx'],
+      ['test/abc', 'test', '7PlsyqtSJcT9GmxlWBaHinAq'],
+      ['test.com/abc', 'test', 'h2lo6EmZ4TeEa8mYWSqcUKZv']
+    ];
+
+    testCases.map(function(testCase) {
+      var locusInput = testCase[0];
+      var pocusInput = testCase[1];
+      var expects = testCase[2];
+      equal(Mushpup.mush(locusInput, pocusInput), expects,
+            'Unexpected mush: ' + [locusInput, pocusInput].join(', '));
+    });
+  });
 })();
