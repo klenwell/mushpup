@@ -59,9 +59,9 @@
   });
 
   test('should remove duplicate modifiers', function() {
-    var locusInput = 'mushpup.org/klenwell/++aia';
+    var locusInput = 'mushpup.org/klenwell/++?i?';
     var locus = new LocusValidator(locusInput);
-    equal(locus.normalized(), 'mushpup.org/klenwell/+ai',
+    equal(locus.normalized(), 'mushpup.org/klenwell/+?i',
           'Expected duplicate modifiers to be removed');
     equal(locus.value(), 'mushpup.org/klenwell',
           'Expected modifier clause to be truncated');
@@ -72,9 +72,9 @@
   });
 
   test('should produce 3 normalization warnings', function() {
-    var locusInput = '  /mushpup.org//klenwell/++aia/';
+    var locusInput = '  /mushpup.org//klenwell/++?i?/';
     var locus = new LocusValidator(locusInput);
-    equal(locus.normalized(), 'mushpup.org/klenwell/+ai',
+    equal(locus.normalized(), 'mushpup.org/klenwell/+?i',
           'Expected duplicate modifiers to be removed');
     equal(locus.value(), 'mushpup.org/klenwell',
           'Expected modifier clause to be truncated');
@@ -93,9 +93,9 @@
       // Input, Expect
       ['mushpup.org/klenwell', true],
       ['//mushpup.org//klenwell//', true],
-      ['/mushpup.org//klenwell/++a!a/', true],
-      ['mushpup.org/klenwell/+ai', false],    // i is invalid modifier
-      ['mushpup.org/klenwell/A*', false]      // A and * are mutually exclusive modifiers
+      ['/mushpup.org//klenwell/++?!?/', true],
+      ['mushpup.org/klenwell/+?i', false],    // i is invalid modifier
+      ['mushpup.org/klenwell/&#', false]      // & and # are mutually exclusive modifiers
     ];
 
     testCases.map(function(testCase) {
@@ -119,9 +119,9 @@
       ['locus', 'pocus', 'dhjcHSkePkdoNZDZwrmZO33v'],
       ['mushpup.org/klenwell',   'pocus', 'dOyw5hTH46xzHJK1N8bagrAT'],
       ['mushpup.org/klenwell/*', 'pocus', 'dOyw5-TH46xz7(K1N8ba2#AT'],
-      ['mushpup.org/klenwell/A', 'pocus', 'dOywchTHCDxzHJKaNEbagrAT'],
+      ['mushpup.org/klenwell/&', 'pocus', 'dOywchTHCDxzHJKaNEbagrAT'],
       ['mushpup.org/klenwell/#', 'pocus', '940853974691790138762309'],
-      ['mushpup.org/klenwell/a+!', 'pocus', 'dOyw5-TH46xz7(K1N8ba2#AT'],
+      ['mushpup.org/klenwell/?+!', 'pocus', 'dOyw5-TH46xz7(K1N8ba2#AT'],
     ];
 
     testCases.map(function(testCase) {
@@ -137,11 +137,29 @@
     var baseLocus = 'mushpup.org/klenwell/';
     var pocus = 'pocus';
 
-    equal(Mushpup.mush(baseLocus + 'a+!', pocus),
-          Mushpup.mush(baseLocus + '!+a', pocus));
-    equal(Mushpup.mush(baseLocus + '+!a', pocus),
-          Mushpup.mush(baseLocus + '!a+', pocus));
-    equal(Mushpup.mush(baseLocus + 'a+!', pocus),
+    equal(Mushpup.mush(baseLocus + '?+!', pocus),
+          Mushpup.mush(baseLocus + '!+?', pocus));
+    equal(Mushpup.mush(baseLocus + '+!?', pocus),
+          Mushpup.mush(baseLocus + '!?+', pocus));
+    equal(Mushpup.mush(baseLocus + '?+!', pocus),
           Mushpup.mush(baseLocus + '*', pocus));
+  });
+
+  test('should not detect modifiers', function() {
+    // This was an issue: https://github.com/klenwell/mushpup/issues/5
+    var testCases = [
+      // Locus, Pocus, Expect
+      ['abc', 'test', 'SUQK587Jg65hVbHU2A7ne9Bx'],
+      ['test/abc', 'test', '7PlsyqtSJcT9GmxlWBaHinAq'],
+      ['test.com/abc', 'test', 'h2lo6EmZ4TeEa8mYWSqcUKZv']
+    ];
+
+    testCases.map(function(testCase) {
+      var locusInput = testCase[0];
+      var pocusInput = testCase[1];
+      var expects = testCase[2];
+      equal(Mushpup.mush(locusInput, pocusInput), expects,
+            'Unexpected mush: ' + [locusInput, pocusInput].join(', '));
+    });
   });
 })();

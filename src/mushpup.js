@@ -74,7 +74,7 @@ var MushpupHasher = (function() {
     for (var i=0; i < modifiers.length; i++) {
       var modifier = modifiers[i];
 
-      if ( modifier == 'a' ) {
+      if ( modifier == '?' ) {
         hash = insertLetterIntoEachStanza(hash);
       }
       else if ( modifier == '+' ) {
@@ -86,7 +86,7 @@ var MushpupHasher = (function() {
       else if ( modifier == '@' ) {
         hash = hash;
       }
-      else if ( modifier == 'A' ) {
+      else if ( modifier == '&' ) {
         hash = alphaOnly(hash);
       }
       else if ( modifier == '#' ) {
@@ -204,14 +204,14 @@ var LocusValidator = function(locus) {
   // Class Constants
   var VALID_MODS = [
     '@',  // alphanumeric characters only
-    'A',  // alphabetic characters only
+    '&',  // alphabetic characters only
     '#',  // numeric only
     '*',  // include at least one num, alpha, and special (punctuation) character
     '+',  // include at least one numeric character
-    'a',  // include at least one alphabetic character
+    '?',  // include at least one alphabetic character
     '!'   // include at least one special character
   ];
-  var MUTEX_MODS = [ '@', 'A', '*' ];
+  var MUTEX_MODS = [ '@', '&', '#' ];
 
   // Public Properties
   self.warnings = [];
