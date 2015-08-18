@@ -11,6 +11,7 @@ var MushpupUI = (function() {
   // Constants
   var MUSH_TIMEOUT = 15;  // seconds
   var RESET_TIMEOUT = 60;
+  var LOCUS_PLACEHOLDER = 'site (e.g. yahoo.com/myusername)';
 
   // Globals
   var unmushTimer;
@@ -129,7 +130,7 @@ var MushpupUI = (function() {
     var $input = $('<input type="text" id="locus" class="form-control" autofocus />');
     var $p = $('<p class="hidden warn warn-locus" />');
 
-    $input.attr('placeholder', 'site (e.g. yahoo.com)');
+    $input.attr('placeholder', LOCUS_PLACEHOLDER);
 
     $locusGroup.append($input).append($p);
     return $locusGroup;
