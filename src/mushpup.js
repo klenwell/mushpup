@@ -346,9 +346,9 @@ var LocusValidator = function(locus) {
     self.hints = [];
     var slashCount = locus.split('/').length - 1;
 
-    if ( slashCount > 2 ) {
+    if ( ((hasModifierClause(locus) && slashCount !== 2) || (slashCount !== 1)) ) {
       self.hints.push([
-        'extra slashes',
+        'locus format',
         'Recommend domain.tld/username for site field (e.g. gmail.com/klenwell)'
       ]);
     }
