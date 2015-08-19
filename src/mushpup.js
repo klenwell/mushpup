@@ -282,6 +282,11 @@ var LocusValidator = function(locus) {
   // Validation Methods
   var validateLocus = function(locus) {
     self.errors = [];
+
+    if ( ! locus ) {
+      self.warnings.push('empty', 'Site field is empty.');
+    }
+
     self.errors = self.errors.concat(validateModifierSyntax(locus));
     self.errors = self.errors.concat(validateModifierConflicts(locus));
   };
