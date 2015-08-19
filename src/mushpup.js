@@ -13,8 +13,8 @@ var Mushpup = (function() {
     return MushpupHasher.basicHash(locus, pocus)
   };
 
-  var mush = function(locus, pocus) {
-    return MushpupHasher.hashWithModifiers(locus, pocus)
+  var mush = function(locus, pocus, modifiers) {
+    return MushpupHasher.hashWithModifiers(locus, pocus, modifiers)
   };
 
   var validateLocus = function(locus) {
@@ -47,10 +47,10 @@ var MushpupHasher = (function() {
     return hash.substr(0,24);
   };
 
-  var hashWithModifiers = function(locus, pocus) {
-    var validatedLocus = new LocusValidator(locus);
-    var modifiers = validatedLocus.modifiers();
-    var hash = basicHash(validatedLocus.value(), pocus);
+  var hashWithModifiers = function(locus, pocus, modifiers) {
+    // Should validate locus and pocus, and extract any modifiers from locus,
+    // independently before calling this method.
+    var hash = basicHash(locus, pocus);
 
     if ( modifiers ) {
       hash = applyModifers(hash, modifiers);
@@ -214,6 +214,7 @@ var LocusValidator = function(locus) {
   var MUTEX_MODS = [ '@', '&', '#' ];
 
   // Public Properties
+  self.hints = [];
   self.warnings = [];
   self.errors = [];
 
@@ -226,6 +227,7 @@ var LocusValidator = function(locus) {
     rawLocus = locus;
     normalLocus = normalizeLocus(locus);
     validateLocus(normalLocus);
+    addHints(normalLocus);
   };
 
   /*
@@ -265,6 +267,14 @@ var LocusValidator = function(locus) {
       return modifierClause.split('');
     }
   };
+
+  this.alerts = function() {
+    return {
+      hints: self.hints,
+      warnings: self.warnings,
+      errors: self.errors
+    };
+  }
 
   /*
    * Private Methods
@@ -319,6 +329,19 @@ var LocusValidator = function(locus) {
     }
 
     return errors;
+  };
+
+  // Hint Methods
+  var addHints = function(locus) {
+    self.hints = [];
+    var slashCount = locus.split(",").length - 1;
+
+    if ( slashCount > 2 ) {
+      self.hints.push([
+        'extra slashes',
+        'For best results, use domain.tld/username for site field (e.g. gmail.com/klenwell)'
+      ]);
+    }
   };
 
   // Normalization Methods

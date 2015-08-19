@@ -258,9 +258,19 @@ var MushpupUI = (function() {
       }
     }
 
+    // Validate input
+    var locus = $('input#locus').val();
+    var pocus = $('input#pocus').val();
+    var validatedLocus = new LocusValidator(locus);
+    var validatedPocus = new PocusValidator(pocus);
+
     // Generate hash
-    var hash = generateHash();
-    validateInput();
+    var hash = Mushpup.mush(validatedLocus.value(),
+                            validatedPocus.value(),
+                            validatedLocus.modifiers());
+
+    // Update output panel
+    updateAlerts(validatedLocus.alerts(), validatedPocus.alerts());
     updateHash(hash);
     $('button.mush').text('unmush');
 
@@ -288,22 +298,16 @@ var MushpupUI = (function() {
     $('div.output-panel').slideToggle('slow', swapFormState);
   };
 
-  var generateHash = function() {
-    var locus = $('input#locus').val().trim();
-    var pocus = $('input#pocus').val().trim();
-    return Mushpup.mush(locus, pocus);
-  };
-
-  var validateInput = function() {
-    var $warnings = $('div.alerts div.warning-alerts');
-    var site = $('input#locus').val().trim();
-    var msw = $('input#pocus').val().trim();
-
+  var validateInput = function(locus, pocus) {
+    // Append alerts to output panel. Returns objects with validated locus, pocus,
+    // and modifier values.
     // Clear any warning
+    var $warnings = $('div.alerts div.warning-alerts');
     $warnings.empty();
 
-    // Add any new warnings
-    var addWarning = function(message, style) {
+    // TODO: move to own method
+    // Add alerts to output panel
+    var addAlert = function(message, style) {
       style = (! style) ? 'warning' : style;
       var alertClass = 'alert alert-dismissible alert-' + style;
       var $button = $([
@@ -319,12 +323,13 @@ var MushpupUI = (function() {
       $warnings.append($alert);
     }
 
+    // TODO: move these to validators
     if ( ! site ) {
-      addWarning('Site field was empty');
+      addAlert('Site field was empty');
     }
 
     if ( ! msw ) {
-      addWarning('Mushpup Secret Word field was empty')
+      addAlert('Mushpup Secret Word field was empty')
     }
   };
 
