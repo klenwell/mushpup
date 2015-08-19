@@ -325,7 +325,7 @@ var MushpupUI = (function() {
 
     // TODO: move these to validators
     if ( ! msw ) {
-      addAlert('Mushpup Secret Word field was empty')
+      addAlert('')
     }
   };
 

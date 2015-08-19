@@ -21,6 +21,10 @@ var Mushpup = (function() {
     return new LocusValidator(locus);
   };
 
+  var validatePocus = function(pocus) {
+    return new PocusValidator(pocus);
+  };
+
   /*
    * Public Interface
    */
@@ -28,6 +32,7 @@ var Mushpup = (function() {
     basicHash: basicHash,
     mush: mush,
     validateLocus: validateLocus,
+    validatePocus: validatePocus,
     version: function() { return VERSION; }
   };
   return API;
@@ -434,5 +439,94 @@ var LocusValidator = function(locus) {
 
   // Init and return object
   init(locus);
+  return self;
+};
+
+
+var PocusValidator = function(pocus) {
+
+  var self = this;
+
+  // Class Constants
+
+  // Public Properties
+  self.hints = [];
+  self.warnings = [];
+  self.errors = [];
+
+  // Private Properties
+  var rawPocus,
+      normalPocus;
+
+  // Pseudo-constructor
+  var init = function(pocus) {
+    rawPocus = pocus;
+    normalPocus = normalizePocus(pocus);
+    validatePocus(normalPocus);
+  };
+
+  /*
+   * Public Methods
+   */
+  this.valid = function() {
+    return self.errors.length < 1;
+  };
+
+  this.input = function() {
+    return rawPocus;
+  };
+
+  this.normalized = function() {
+    return normalPocus;
+  };
+
+  this.value = function() {
+    return normalPocus;
+  };
+
+  this.alerts = function() {
+    return {
+      hints: self.hints,
+      warnings: self.warnings,
+      errors: self.errors
+    };
+  }
+
+  /*
+   * Private Methods
+   */
+  // Validation Methods
+  var validatePocus = function(pocus) {
+    self.errors = [];
+
+    if ( ! pocus ) {
+      self.warnings.push('empty', 'Mushpup Secret Word field is empty.');
+    }
+  };
+
+  // Hint Methods
+  var addHints = function(pocus) {
+  };
+
+  // Normalization Methods
+  var normalizePocus = function(pocus) {
+    pocus = trimWhitespaceWithWarning(pocus);
+    return pocus;
+  };
+
+  var trimWhitespaceWithWarning = function(pocus) {
+    var trimmedPocus = pocus.trim();
+
+    if ( trimmedPocus !== pocus ) {
+      self.warnings.push(['normalization', 'Trimmed whitespace from ends of secret word.']);
+    }
+
+    return trimmedPocus;
+  };
+
+  // Helper Methods
+
+  // Init and return object
+  init(pocus);
   return self;
 };
