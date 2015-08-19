@@ -289,7 +289,7 @@ var LocusValidator = function(locus) {
     self.errors = [];
 
     if ( ! locus ) {
-      self.warnings.push('empty', 'Site field is empty.');
+      self.warnings.push(['empty', 'Site field is empty.']);
     }
 
     self.errors = self.errors.concat(validateModifierSyntax(locus));
@@ -344,12 +344,12 @@ var LocusValidator = function(locus) {
   // Hint Methods
   var addHints = function(locus) {
     self.hints = [];
-    var slashCount = locus.split(",").length - 1;
+    var slashCount = locus.split('/').length - 1;
 
     if ( slashCount > 2 ) {
       self.hints.push([
         'extra slashes',
-        'For best results, use domain.tld/username for site field (e.g. gmail.com/klenwell)'
+        'Recommend domain.tld/username for site field (e.g. gmail.com/klenwell)'
       ]);
     }
   };
@@ -500,7 +500,7 @@ var PocusValidator = function(pocus) {
     self.errors = [];
 
     if ( ! pocus ) {
-      self.warnings.push('empty', 'Mushpup Secret Word field is empty.');
+      self.warnings.push(['empty', 'Secret word field is empty.']);
     }
   };
 

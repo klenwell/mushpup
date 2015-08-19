@@ -179,14 +179,14 @@ var MushpupUI = (function() {
 
   var buildAlertsBlock = function() {
     var $alertsBlock = $('<div class="alerts" />');
-    var $helpAlerts = $('<div class="help-alerts" />');
     var $errorAlerts = $('<div class="error-alerts" />');
     var $warningAlerts = $('<div class="warning-alerts" />');
+    var $hintAlerts = $('<div class="hint-alerts" />');
 
     $alertsBlock
-      .append($helpAlerts)
       .append($errorAlerts)
-      .append($warningAlerts);
+      .append($warningAlerts)
+      .append($hintAlerts);
 
     return $alertsBlock;
   };
@@ -270,7 +270,7 @@ var MushpupUI = (function() {
                             validatedLocus.modifiers());
 
     // Update output panel
-    updateAlerts(validatedLocus.alerts(), validatedPocus.alerts());
+    showAlerts(validatedLocus.alerts(), validatedPocus.alerts());
     updateHash(hash);
     $('button.mush').text('unmush');
 
@@ -298,37 +298,6 @@ var MushpupUI = (function() {
     $('div.output-panel').slideToggle('slow', swapFormState);
   };
 
-  var validateInput = function(locus, pocus) {
-    // Append alerts to output panel. Returns objects with validated locus, pocus,
-    // and modifier values.
-    // Clear any warning
-    var $warnings = $('div.alerts div.warning-alerts');
-    $warnings.empty();
-
-    // TODO: move to own method
-    // Add alerts to output panel
-    var addAlert = function(message, style) {
-      style = (! style) ? 'warning' : style;
-      var alertClass = 'alert alert-dismissible alert-' + style;
-      var $button = $([
-        '<button type="button" class="close" data-dismiss="alert">',
-        '<span aria-hidden="true">&times;</span>',
-        '<span class="sr-only">Close</span>',
-        '</button>'].join('\n'));
-      var $messageSpan = $('<span />').text(message);
-      var $alert = $('<div role="alert" />')
-        .addClass(alertClass)
-        .append($button)
-        .append($messageSpan);
-      $warnings.append($alert);
-    }
-
-    // TODO: move these to validators
-    if ( ! msw ) {
-      addAlert('')
-    }
-  };
-
   var updateHash = function(hashCode) {
     var groups = ['west', 'central', 'east'];
     var hashCodeLetters = hashCode.split('');
@@ -350,6 +319,53 @@ var MushpupUI = (function() {
 
       $hashRow.append($hashGroup);
     });
+  };
+
+  var showAlerts = function(locusAlerts, pocusAlerts) {
+    var styleMap = {
+      // mushpup-validator-key: bootstrap-class
+      error: 'danger',
+      warning: 'warning',
+      hint: 'info'
+    };
+
+    ['error', 'warning', 'hint'].map(function(validationKey) {
+      var type = validationKey + 's';
+      var selector = 'div.alerts div.' + validationKey + '-alerts';
+      var $alerts = $(selector);
+      $alerts.empty();
+
+      [locusAlerts, pocusAlerts].map(function(alerts) {
+        var alertsOfType = alerts[type];
+
+        alertsOfType.map(function(alert) {
+          var message = alert[1];
+          var style = styleMap[validationKey];
+          var $alert = buildAlert(message, style);
+          $alerts.append($alert);
+        });
+      });
+    });
+  };
+
+  var buildAlert = function(message, style) {
+    style = (! style) ? 'warning' : style;
+    var alertClass = 'alert alert-dismissible alert-' + style;
+
+    var $button = $([
+      '<button type="button" class="close" data-dismiss="alert">',
+      '<span aria-hidden="true">&times;</span>',
+      '<span class="sr-only">Close</span>',
+      '</button>'].join('\n'));
+
+    var $messageSpan = $('<span />').text(message);
+
+    var $alert = $('<div role="alert" />')
+      .addClass(alertClass)
+      .append($button)
+      .append($messageSpan);
+
+    return $alert;
   };
 
   var restartResetTimer = function() {
