@@ -193,4 +193,12 @@
             'Unexpected mush: ' + [locusInput, pocusInput].join(', '));
     });
   });
+
+  test('should produce locus hint', function() {
+    var locusInput = 'mushpup.org';
+    var locus = new LocusValidator(locusInput);
+    equal(locus.hints.length, 1, 'Expected 1 hint');
+    equal(locus.hints[0][0], 'locus format', 'Expected locus format tag on hint');
+    assertStartsWith(locus.hints[0][1], 'Recommend domain.tld/username');
+  });
 })();
