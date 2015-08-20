@@ -1,6 +1,15 @@
 /*
  * Mushpup-UI Tests
  */
+function assertStartsWith(str, substr, message) {
+  str = (!! str) ? str : 'STR IS UNDEFINED';
+  substr = (!! substr) ? substr : 'SUBSTR UNDEFINED';
+  message = (!! message) ? message : str + ' does not start with ' + substr;
+
+  ok(str.slice(0, substr.length) == substr, message);
+}
+
+
 (function() {
   module('Mushpup-UI module');
 

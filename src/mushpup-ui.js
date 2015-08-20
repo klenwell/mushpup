@@ -205,6 +205,26 @@ var MushpupUI = (function() {
     return $payloadBlock;
   };
 
+  var buildAlert = function(message, style) {
+    style = (! style) ? 'warning' : style;
+    var alertClass = 'alert alert-dismissible alert-' + style;
+
+    var $button = $([
+      '<button type="button" class="close" data-dismiss="alert">',
+      '<span aria-hidden="true">&times;</span>',
+      '<span class="sr-only">Close</span>',
+      '</button>'].join('\n'));
+
+    var $messageSpan = $('<span />').text(message);
+
+    var $alert = $('<div role="alert" />')
+      .addClass(alertClass)
+      .append($button)
+      .append($messageSpan);
+
+    return $alert;
+  };
+
   /*
    * Event Handlers
    */
@@ -329,11 +349,12 @@ var MushpupUI = (function() {
       hint: 'info'
     };
 
+    clearAlerts();
+
     ['error', 'warning', 'hint'].map(function(validationKey) {
       var type = validationKey + 's';
       var selector = 'div.alerts div.' + validationKey + '-alerts';
       var $alerts = $(selector);
-      $alerts.empty();
 
       [locusAlerts, pocusAlerts].map(function(alerts) {
         var alertsOfType = alerts[type];
@@ -346,26 +367,6 @@ var MushpupUI = (function() {
         });
       });
     });
-  };
-
-  var buildAlert = function(message, style) {
-    style = (! style) ? 'warning' : style;
-    var alertClass = 'alert alert-dismissible alert-' + style;
-
-    var $button = $([
-      '<button type="button" class="close" data-dismiss="alert">',
-      '<span aria-hidden="true">&times;</span>',
-      '<span class="sr-only">Close</span>',
-      '</button>'].join('\n'));
-
-    var $messageSpan = $('<span />').text(message);
-
-    var $alert = $('<div role="alert" />')
-      .addClass(alertClass)
-      .append($button)
-      .append($messageSpan);
-
-    return $alert;
   };
 
   var restartResetTimer = function() {
@@ -390,6 +391,7 @@ var MushpupUI = (function() {
     clearTimeout(resetTimer);
     clearPayload();
     clearInputFields();
+    clearAlerts();
     var formIsVisible = showForm();
 
     $.when(formIsVisible).then(function() {
@@ -402,6 +404,14 @@ var MushpupUI = (function() {
     $('input#locus').val('');
     $('input#pocus').val('');
     $('input#pocus-confirm').val('');
+  };
+
+  var clearAlerts = function() {
+    ['error', 'warning', 'hint'].map(function(alertClass) {
+      var selector = 'div.alerts div.' + alertClass + '-alerts';
+      var $alerts = $(selector);
+      $alerts.empty();
+    });
   };
 
   var showForm = function() {
