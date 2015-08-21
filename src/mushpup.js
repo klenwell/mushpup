@@ -13,12 +13,16 @@ var Mushpup = (function() {
     return MushpupHasher.basicHash(locus, pocus)
   };
 
-  var mush = function(locus, pocus) {
-    return MushpupHasher.hashWithModifiers(locus, pocus)
+  var mush = function(locus, pocus, modifiers) {
+    return MushpupHasher.hashWithModifiers(locus, pocus, modifiers)
   };
 
   var validateLocus = function(locus) {
     return new LocusValidator(locus);
+  };
+
+  var validatePocus = function(pocus) {
+    return new PocusValidator(pocus);
   };
 
   /*
@@ -28,6 +32,7 @@ var Mushpup = (function() {
     basicHash: basicHash,
     mush: mush,
     validateLocus: validateLocus,
+    validatePocus: validatePocus,
     version: function() { return VERSION; }
   };
   return API;
@@ -47,10 +52,10 @@ var MushpupHasher = (function() {
     return hash.substr(0,24);
   };
 
-  var hashWithModifiers = function(locus, pocus) {
-    var validatedLocus = new LocusValidator(locus);
-    var modifiers = validatedLocus.modifiers();
-    var hash = basicHash(validatedLocus.value(), pocus);
+  var hashWithModifiers = function(locus, pocus, modifiers) {
+    // Should validate locus and pocus, and extract any modifiers from locus,
+    // independently before calling this method.
+    var hash = basicHash(locus, pocus);
 
     if ( modifiers ) {
       hash = applyModifers(hash, modifiers);
@@ -214,6 +219,7 @@ var LocusValidator = function(locus) {
   var MUTEX_MODS = [ '@', '&', '#' ];
 
   // Public Properties
+  self.hints = [];
   self.warnings = [];
   self.errors = [];
 
@@ -226,6 +232,7 @@ var LocusValidator = function(locus) {
     rawLocus = locus;
     normalLocus = normalizeLocus(locus);
     validateLocus(normalLocus);
+    addHints(normalLocus);
   };
 
   /*
@@ -266,12 +273,25 @@ var LocusValidator = function(locus) {
     }
   };
 
+  this.alerts = function() {
+    return {
+      hints: self.hints,
+      warnings: self.warnings,
+      errors: self.errors
+    };
+  }
+
   /*
    * Private Methods
    */
   // Validation Methods
   var validateLocus = function(locus) {
     self.errors = [];
+
+    if ( ! locus ) {
+      self.warnings.push(['empty', 'Site field is empty.']);
+    }
+
     self.errors = self.errors.concat(validateModifierSyntax(locus));
     self.errors = self.errors.concat(validateModifierConflicts(locus));
   };
@@ -319,6 +339,19 @@ var LocusValidator = function(locus) {
     }
 
     return errors;
+  };
+
+  // Hint Methods
+  var addHints = function(locus) {
+    self.hints = [];
+    var slashCount = locus.split('/').length - 1;
+
+    if ( ((hasModifierClause(locus) && slashCount !== 2) || (slashCount !== 1)) ) {
+      self.hints.push([
+        'locus format',
+        'Recommend domain.tld/username for site field (e.g. gmail.com/klenwell)'
+      ]);
+    }
   };
 
   // Normalization Methods
@@ -406,5 +439,94 @@ var LocusValidator = function(locus) {
 
   // Init and return object
   init(locus);
+  return self;
+};
+
+
+var PocusValidator = function(pocus) {
+
+  var self = this;
+
+  // Class Constants
+
+  // Public Properties
+  self.hints = [];
+  self.warnings = [];
+  self.errors = [];
+
+  // Private Properties
+  var rawPocus,
+      normalPocus;
+
+  // Pseudo-constructor
+  var init = function(pocus) {
+    rawPocus = pocus;
+    normalPocus = normalizePocus(pocus);
+    validatePocus(normalPocus);
+  };
+
+  /*
+   * Public Methods
+   */
+  this.valid = function() {
+    return self.errors.length < 1;
+  };
+
+  this.input = function() {
+    return rawPocus;
+  };
+
+  this.normalized = function() {
+    return normalPocus;
+  };
+
+  this.value = function() {
+    return normalPocus;
+  };
+
+  this.alerts = function() {
+    return {
+      hints: self.hints,
+      warnings: self.warnings,
+      errors: self.errors
+    };
+  }
+
+  /*
+   * Private Methods
+   */
+  // Validation Methods
+  var validatePocus = function(pocus) {
+    self.errors = [];
+
+    if ( ! pocus ) {
+      self.warnings.push(['empty', 'Secret word field is empty.']);
+    }
+  };
+
+  // Hint Methods
+  var addHints = function(pocus) {
+  };
+
+  // Normalization Methods
+  var normalizePocus = function(pocus) {
+    pocus = trimWhitespaceWithWarning(pocus);
+    return pocus;
+  };
+
+  var trimWhitespaceWithWarning = function(pocus) {
+    var trimmedPocus = pocus.trim();
+
+    if ( trimmedPocus !== pocus ) {
+      self.warnings.push(['normalization', 'Trimmed whitespace from ends of secret word.']);
+    }
+
+    return trimmedPocus;
+  };
+
+  // Helper Methods
+
+  // Init and return object
+  init(pocus);
   return self;
 };

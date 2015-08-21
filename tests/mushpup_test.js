@@ -128,7 +128,15 @@
       var locusInput = testCase[0];
       var pocusInput = testCase[1];
       var expects = testCase[2];
-      equal(Mushpup.mush(locusInput, pocusInput), expects,
+
+      var validatedLocus = new LocusValidator(locusInput);
+      var validatedPocus = new PocusValidator(pocusInput);
+
+      var locus = validatedLocus.value();
+      var pocus = validatedPocus.value();
+      var modifiers = validatedLocus.modifiers();
+
+      equal(Mushpup.mush(locus, pocus, modifiers), expects,
             'Unexpected mush: ' + [locusInput, pocusInput].join(', '));
     });
   });
@@ -137,12 +145,27 @@
     var baseLocus = 'mushpup.org/klenwell/';
     var pocus = 'pocus';
 
-    equal(Mushpup.mush(baseLocus + '?+!', pocus),
-          Mushpup.mush(baseLocus + '!+?', pocus));
-    equal(Mushpup.mush(baseLocus + '+!?', pocus),
-          Mushpup.mush(baseLocus + '!?+', pocus));
-    equal(Mushpup.mush(baseLocus + '?+!', pocus),
-          Mushpup.mush(baseLocus + '*', pocus));
+    var testCases = [
+      // modifier str, modifier str
+      ['?+!', '!+?'],
+      ['+!?', '!?+'],
+      ['?+!', '*']
+    ];
+
+    testCases.map(function(testCase) {
+      var locusInput1 = baseLocus + testCase[0];
+      var locusInput2 = baseLocus + testCase[1];
+
+      var validatedLocus1 = new LocusValidator(locusInput1);
+      var validatedLocus2 = new LocusValidator(locusInput2);
+
+      var locus1 = validatedLocus1.value();
+      var locus2 = validatedLocus1.value();
+
+      equal(Mushpup.mush(validatedLocus1.value(), pocus, validatedLocus1.modifiers()),
+            Mushpup.mush(validatedLocus2.value(), pocus, validatedLocus2.modifiers()),
+            'Unexpected mush: ' + testCase.join(', '));
+    });
   });
 
   test('should not detect modifiers', function() {
@@ -158,8 +181,24 @@
       var locusInput = testCase[0];
       var pocusInput = testCase[1];
       var expects = testCase[2];
-      equal(Mushpup.mush(locusInput, pocusInput), expects,
+
+      var validatedLocus = new LocusValidator(locusInput);
+      var validatedPocus = new PocusValidator(pocusInput);
+
+      var locus = validatedLocus.value();
+      var pocus = validatedPocus.value();
+      var modifiers = validatedLocus.modifiers();
+
+      equal(Mushpup.mush(locus, pocus, modifiers), expects,
             'Unexpected mush: ' + [locusInput, pocusInput].join(', '));
     });
+  });
+
+  test('should produce locus hint', function(assert) {
+    var locusInput = 'mushpup.org';
+    var locus = new LocusValidator(locusInput);
+    assert.equal(locus.hints.length, 1, 'Expected 1 hint');
+    assert.equal(locus.hints[0][0], 'locus format', 'Expected locus format tag on hint');
+    assert.startsWith(locus.hints[0][1], 'Recommend domain.tld/username');
   });
 })();

@@ -11,6 +11,7 @@ var MushpupUI = (function() {
   // Constants
   var MUSH_TIMEOUT = 15;  // seconds
   var RESET_TIMEOUT = 60;
+  var LOCUS_PLACEHOLDER = 'site (e.g. yahoo.com/myusername)';
 
   // Globals
   var unmushTimer;
@@ -129,7 +130,7 @@ var MushpupUI = (function() {
     var $input = $('<input type="text" id="locus" class="form-control" autofocus />');
     var $p = $('<p class="hidden warn warn-locus" />');
 
-    $input.attr('placeholder', 'site (e.g. yahoo.com)');
+    $input.attr('placeholder', LOCUS_PLACEHOLDER);
 
     $locusGroup.append($input).append($p);
     return $locusGroup;
@@ -178,14 +179,14 @@ var MushpupUI = (function() {
 
   var buildAlertsBlock = function() {
     var $alertsBlock = $('<div class="alerts" />');
-    var $helpAlerts = $('<div class="help-alerts" />');
     var $errorAlerts = $('<div class="error-alerts" />');
     var $warningAlerts = $('<div class="warning-alerts" />');
+    var $hintAlerts = $('<div class="hint-alerts" />');
 
     $alertsBlock
-      .append($helpAlerts)
       .append($errorAlerts)
-      .append($warningAlerts);
+      .append($warningAlerts)
+      .append($hintAlerts);
 
     return $alertsBlock;
   };
@@ -202,6 +203,26 @@ var MushpupUI = (function() {
       .append($lowerRuler);
 
     return $payloadBlock;
+  };
+
+  var buildAlert = function(message, style) {
+    style = (! style) ? 'warning' : style;
+    var alertClass = 'alert alert-dismissible alert-' + style;
+
+    var $button = $([
+      '<button type="button" class="close" data-dismiss="alert">',
+      '<span aria-hidden="true">&times;</span>',
+      '<span class="sr-only">Close</span>',
+      '</button>'].join('\n'));
+
+    var $messageSpan = $('<span />').text(message);
+
+    var $alert = $('<div role="alert" />')
+      .addClass(alertClass)
+      .append($button)
+      .append($messageSpan);
+
+    return $alert;
   };
 
   /*
@@ -257,9 +278,19 @@ var MushpupUI = (function() {
       }
     }
 
+    // Validate input
+    var locus = $('input#locus').val();
+    var pocus = $('input#pocus').val();
+    var validatedLocus = new LocusValidator(locus);
+    var validatedPocus = new PocusValidator(pocus);
+
     // Generate hash
-    var hash = generateHash();
-    validateInput();
+    var hash = Mushpup.mush(validatedLocus.value(),
+                            validatedPocus.value(),
+                            validatedLocus.modifiers());
+
+    // Update output panel
+    showAlerts(validatedLocus.alerts(), validatedPocus.alerts());
     updateHash(hash);
     $('button.mush').text('unmush');
 
@@ -287,46 +318,6 @@ var MushpupUI = (function() {
     $('div.output-panel').slideToggle('slow', swapFormState);
   };
 
-  var generateHash = function() {
-    var locus = $('input#locus').val().trim();
-    var pocus = $('input#pocus').val().trim();
-    return Mushpup.mush(locus, pocus);
-  };
-
-  var validateInput = function() {
-    var $warnings = $('div.alerts div.warning-alerts');
-    var site = $('input#locus').val().trim();
-    var msw = $('input#pocus').val().trim();
-
-    // Clear any warning
-    $warnings.empty();
-
-    // Add any new warnings
-    var addWarning = function(message, style) {
-      style = (! style) ? 'warning' : style;
-      var alertClass = 'alert alert-dismissible alert-' + style;
-      var $button = $([
-        '<button type="button" class="close" data-dismiss="alert">',
-        '<span aria-hidden="true">&times;</span>',
-        '<span class="sr-only">Close</span>',
-        '</button>'].join('\n'));
-      var $messageSpan = $('<span />').text(message);
-      var $alert = $('<div role="alert" />')
-        .addClass(alertClass)
-        .append($button)
-        .append($messageSpan);
-      $warnings.append($alert);
-    }
-
-    if ( ! site ) {
-      addWarning('Site field was empty');
-    }
-
-    if ( ! msw ) {
-      addWarning('Mushpup Secret Word field was empty')
-    }
-  };
-
   var updateHash = function(hashCode) {
     var groups = ['west', 'central', 'east'];
     var hashCodeLetters = hashCode.split('');
@@ -347,6 +338,34 @@ var MushpupUI = (function() {
       }
 
       $hashRow.append($hashGroup);
+    });
+  };
+
+  var showAlerts = function(locusAlerts, pocusAlerts) {
+    var styleMap = {
+      // mushpup-validator-key: bootstrap-class
+      error: 'danger',
+      warning: 'warning',
+      hint: 'info'
+    };
+
+    clearAlerts();
+
+    ['error', 'warning', 'hint'].map(function(validationKey) {
+      var type = validationKey + 's';
+      var selector = 'div.alerts div.' + validationKey + '-alerts';
+      var $alerts = $(selector);
+
+      [locusAlerts, pocusAlerts].map(function(alerts) {
+        var alertsOfType = alerts[type];
+
+        alertsOfType.map(function(alert) {
+          var message = alert[1];
+          var style = styleMap[validationKey];
+          var $alert = buildAlert(message, style);
+          $alerts.append($alert);
+        });
+      });
     });
   };
 
@@ -372,6 +391,7 @@ var MushpupUI = (function() {
     clearTimeout(resetTimer);
     clearPayload();
     clearInputFields();
+    clearAlerts();
     var formIsVisible = showForm();
 
     $.when(formIsVisible).then(function() {
@@ -384,6 +404,14 @@ var MushpupUI = (function() {
     $('input#locus').val('');
     $('input#pocus').val('');
     $('input#pocus-confirm').val('');
+  };
+
+  var clearAlerts = function() {
+    ['error', 'warning', 'hint'].map(function(alertClass) {
+      var selector = 'div.alerts div.' + alertClass + '-alerts';
+      var $alerts = $(selector);
+      $alerts.empty();
+    });
   };
 
   var showForm = function() {

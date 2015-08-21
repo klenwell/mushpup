@@ -1,28 +1,30 @@
 <!DOCTYPE html>
 <html>
-	<head>
-		<meta charset="utf-8">
-		<title>Mushpup Qunit Tests</title>
+    <head>
+        <meta charset="utf-8">
+        <title>Mushpup Qunit Tests</title>
 
         <!--
           Note: Protocol required.
           See https://github.com/jonkemp/node-qunit-phantomjs/issues/10
           -->
-		<link rel="stylesheet" href="http://code.jquery.com/qunit/qunit-1.18.0.css">
-	</head>
-	<body>
-		<div id="qunit"></div>
-		<div id="qunit-fixture"></div>
+        <link rel="stylesheet" href="http://code.jquery.com/qunit/qunit-1.18.0.css">
+        <link rel="stylesheet" href="../src/mushpup-ui.css">
+    </head>
+    <body>
+        <div id="qunit"></div>
+        <div id="qunit-fixture"></div>
 
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
         <script src="https://rawgit.com/klenwell/mushpup/master/vendor/crypto-js/sha1.js"></script>
         <script src="https://rawgit.com/klenwell/mushpup/master/vendor/crypto-js/enc-base64-min.js"></script>
         <script src="../src/mushpup.js"></script>
-		<script src="../src/mushpup-ui.js"></script>
+        <script src="../src/mushpup-ui.js"></script>
 
-		<script src="http://code.jquery.com/qunit/qunit-1.18.0.js"></script>
-		<script src="basic_test.js"></script>
+        <script src="http://code.jquery.com/qunit/qunit-1.18.0.js"></script>
+        <script src="test_helper.js"></script>
+        <script src="basic_test.js"></script>
         <script src="mushpup_test.js"></script>
-		<script src="mushpup_ui_test.js"></script>
-	</body>
+        <script src="mushpup_ui_test.js"></script>
+    </body>
 </html>
