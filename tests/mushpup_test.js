@@ -194,11 +194,11 @@
     });
   });
 
-  test('should produce locus hint', function() {
+  test('should produce locus hint', function(assert) {
     var locusInput = 'mushpup.org';
     var locus = new LocusValidator(locusInput);
-    equal(locus.hints.length, 1, 'Expected 1 hint');
-    equal(locus.hints[0][0], 'locus format', 'Expected locus format tag on hint');
-    assertStartsWith(locus.hints[0][1], 'Recommend domain.tld/username');
+    assert.equal(locus.hints.length, 1, 'Expected 1 hint');
+    assert.equal(locus.hints[0][0], 'locus format', 'Expected locus format tag on hint');
+    assert.startsWith(locus.hints[0][1], 'Recommend domain.tld/username');
   });
 })();

@@ -1,15 +1,6 @@
 /*
  * Mushpup-UI Tests
  */
-function assertStartsWith(str, substr, message) {
-  str = (!! str) ? str : 'STR IS UNDEFINED';
-  substr = (!! substr) ? substr : 'SUBSTR UNDEFINED';
-  message = (!! message) ? message : str + ' does not start with ' + substr;
-
-  ok(str.slice(0, substr.length) == substr, message);
-}
-
-
 (function() {
   module('Mushpup-UI module');
 
@@ -106,7 +97,7 @@ function assertStartsWith(str, substr, message) {
     setTimeout(function() {
       hintsDisplayed = $('div.hint-alerts > div.alert > span');
       equal(hintsDisplayed.length, 1, 'expected one hint alert');
-      assertStartsWith($(hintsDisplayed[0]).html(), locusHint);
+      assert.startsWith($(hintsDisplayed[0]).html(), locusHint);
       done();
     }, 1000);
   });

@@ -1,4 +1,4 @@
-QUnit.assert.assertStartsWith = function( str, substr, message ) {
+QUnit.assert.startsWith = function(str, substr, message) {
   str = (!! str) ? str : '<STR UNDEFINED>';
   substr = (!! substr) ? substr : '<SUBSTR UNDEFINED>';
   message = (!! message) ? message : str + ' does not start with ' + substr;
