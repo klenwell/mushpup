@@ -88,4 +88,47 @@ function assertStartsWith(str, substr, message) {
     equal($('div.upper.ruler span.c').length, 24, 'upper ruler not loaded');
     equal($('div.lower.ruler span.c').length, 24, 'lower ruler not loaded');
   });
+
+  test('should display hint', function(assert) {
+    ui.init('div#qunit-fixture');
+
+    var locusInput = 'test.com';
+    var pocusInput = 'test';
+    var locusHint = 'Recommend domain.tld/username for site field';
+
+    $('input#locus').val(locusInput);
+    $('input#pocus').val(pocusInput);
+    $('button.mush').click();
+
+    // Need to wait for animation
+    var done = assert.async();
+
+    setTimeout(function() {
+      hintsDisplayed = $('div.hint-alerts > div.alert > span');
+      equal(hintsDisplayed.length, 1, 'expected one hint alert');
+      assertStartsWith($(hintsDisplayed[0]).html(), locusHint);
+      done();
+    }, 1000);
+  });
+
+  test('should not display hint', function(assert) {
+    ui.init('div#qunit-fixture');
+
+    var locusInput = 'test.com/user';
+    var pocusInput = 'test';
+    var locusHint = 'Recommend domain.tld/username for site field';
+
+    $('input#locus').val(locusInput);
+    $('input#pocus').val(pocusInput);
+    $('button.mush').click();
+
+    // Need to wait for animation
+    var done = assert.async();
+
+    setTimeout(function() {
+      hintsDisplayed = $('div.hint-alerts > div.alert > span');
+      equal(hintsDisplayed.length, 0, 'expected one hint alert');
+      done();
+    }, 1000);
+  });
 })();
