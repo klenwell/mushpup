@@ -13,6 +13,13 @@ Mushpup is a simple javascript library I've created that leverages existing cryp
 libraries to produce strong, unique passwords that can be securely retrieved from anywhere
 there's an internet connection.
 
+## Web Application
+
+The Mushpup web application provides access to an interface to quickly retrieve passwords. It is available over the internet at the following sites:
+
+- http://mushpup.org/
+- https://mushpup-demo.appspot.com/
+
 
 ## Installation
 
