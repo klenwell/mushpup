@@ -28,7 +28,7 @@ Mushpup requires the SHA1 and Base64 algorithms. It currently uses the
 
     <script src="http://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.2/rollups/sha1.js"></script>
     <script src="http://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.2/components/enc-base64.js"></script>
-    <script src="https://rawgit.com/klenwell/mushpup/master/src/mushpup.js"></script>
+    <script src="https://cdn.rawgit.com/klenwell/mushpup/master/src/mushpup.js"></script>
 
 
 ## Tests
@@ -61,6 +61,19 @@ To set up grunt on Debian/Ubuntu:
     ```
 
 You should be good to test.
+
+
+## Local Server
+
+To test in the browser locally, run Python's SimpleHTTPServer from the repository root:
+
+    python -m SimpleHTTPServer
+
+Then browse to:
+
+- http://localhost:8000/tests/dev.html
+
+For information on mobile testing with Android using Chrome, see [Remote Debugging Android Devices](https://developers.google.com/web/tools/chrome-devtools/remote-debugging/).
 
 
 ## Usage

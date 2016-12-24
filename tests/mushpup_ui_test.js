@@ -47,6 +47,17 @@
     ok($('div.form-group.pocus-confirm').hasClass('rolled-up'));
   });
 
+  test('expect locus field to have autocorrect attributes turned off', function() {
+    equal($('input#locus').length, 0);
+
+    ui.init('div#qunit-fixture');
+
+    equal($('input#locus').length, 1, 'locus input field not loaded');
+    equal($('input#locus').attr('autocomplete'), 'off', 'autocomplete not off');
+    equal($('input#locus').attr('autocapitalize'), 'off', 'autocomplete not off');
+    equal($('input#locus').attr('spellcheck'), 'off', 'autocomplete not off');
+  });
+
   test('should display mushpup action panel', function() {
     equal($('div.action-panel').length, 0);
     equal($('span.action.confirm').length, 0);
