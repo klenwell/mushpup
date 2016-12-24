@@ -127,10 +127,15 @@ var MushpupUI = (function() {
 
   var buildLocusFormGroup = function() {
     var $locusGroup = $('<div class="form-group locus" />');
-    var $input = $('<input type="text" id="locus" class="form-control" autofocus />');
+    var $input = $('<input type="url" id="locus" class="form-control" autofocus />');
     var $p = $('<p class="hidden warn warn-locus" />');
 
     $input.attr('placeholder', LOCUS_PLACEHOLDER);
+
+    // Disable auto-modification attributes
+    $input.attr('autocomplete', 'off');
+    $input.attr('autocapitalize', 'off');
+    $input.attr('spellcheck', 'off');
 
     $locusGroup.append($input).append($p);
     return $locusGroup;
