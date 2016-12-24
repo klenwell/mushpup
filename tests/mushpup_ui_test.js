@@ -47,7 +47,7 @@
     ok($('div.form-group.pocus-confirm').hasClass('rolled-up'));
   });
 
-  test('expect locus field to have autocorrects attributes turned off', function() {
+  test('expect locus field to have autocorrect attributes turned off', function() {
     equal($('input#locus').length, 0);
 
     ui.init('div#qunit-fixture');
