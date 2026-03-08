@@ -17,8 +17,8 @@ there's an internet connection.
 
 The Mushpup web application provides access to an interface to quickly retrieve passwords. It is available over the internet at the following sites:
 
-- http://mushpup.org/
-- https://mushpup-demo.appspot.com/
+- https://mushpup.org/
+- https://klenwell.com/mushpup/
 
 
 ## Installation
